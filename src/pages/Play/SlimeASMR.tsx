@@ -61,7 +61,7 @@ export default function SlimeASMR() {
     <p>Segure o slime com o mouse ou dedo e arraste para qualquer direção para esticar. Solte para ele voltar à forma original.</p>
     <div className="slime-stage">
       <button type="button" className={'slime-blob' + (motion !== 'rest' ? ' ' + motion : '')}
-        style={{ '--slime-color': color, transform: dragging ? 'scale(' + stretchX + ', ' + stretchY + ')' : undefined }}
+        style={{ background: 'radial-gradient(circle at 32% 25%, color-mix(in srgb, ' + color + ' 35%, white) 0%, ' + color + ' 57%, color-mix(in srgb, ' + color + ' 65%, #35234f) 100%)', transform: dragging ? 'scale(' + stretchX + ', ' + stretchY + ')' : undefined }}
         onPointerDown={startStretch} onPointerMove={moveStretch} onPointerUp={endStretch} onPointerCancel={endStretch}
         aria-label="Segure e arraste para esticar o slime"><span aria-hidden="true">☺</span></button>
     </div>
