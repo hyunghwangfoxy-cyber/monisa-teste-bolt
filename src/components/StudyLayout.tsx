@@ -5,16 +5,13 @@ import { useMonisa } from '../context/MonisaContext'
 import Sidebar from './Sidebar/Sidebar'
 
 export default function StudyLayout() {
-  const { user, loading, profile, profileLoading, error, refreshProfile, recoveryRequired } = useMonisa()
+  const { loading, profile, profileLoading, error, refreshProfile } = useMonisa()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuToggle = useRef<HTMLButtonElement>(null)
-  const closeMenu = useCallback(() => {
-    setMenuOpen(false)
-    menuToggle.current?.focus()
-  }, [])
+  const closeMenu = useCallback(() => { setMenuOpen(false); menuToggle.current?.focus() }, [])
   const location = useLocation()
   if (loading) return <div className="page-loading" role="status">Preparando seu espaço…</div>
-  if (!user || recoveryRequired) return <Navigate to="/login" replace />
+  if (!profile) return <Navigate to="/" replace />
 
   return <div className="study-app">
     <a className="skip-link" href="#main-content">Pular para o conteúdo</a>
