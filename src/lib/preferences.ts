@@ -22,6 +22,7 @@ export interface Profile {
   name: string
   bio: string
   subject: string
+  learningProfile: Record<string, string> | null
   avatarUrl: string | null
   preferences: Preferences
 }
