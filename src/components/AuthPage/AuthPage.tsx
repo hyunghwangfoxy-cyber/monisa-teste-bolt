@@ -30,14 +30,14 @@ export default function AuthPage({ register = false }: { register?: boolean }) {
         navigate('/home')
       } else if (register) {
         const created = await signup(email.trim(), password, { full_name: name.trim() })
-        if (created.confirmedAt) navigate('/settings')
+        if (created.confirmedAt) navigate('/quiz')
         else {
-          setNotice('Conta criada! Confira sua caixa de entrada e confirme seu e-mail para entrar. Veja também a pasta de spam.')
+          setNotice('Conta criada! Confira sua caixa de entrada e confirme seu e-mail para entrar. Depois, você poderá acessar o quiz pelo menu.')
           setPassword('')
         }
       } else {
         await login(email.trim(), password)
-        navigate('/home')
+        navigate(localStorage.getItem('monisa-quiz-complete') === 'true' ? '/home' : '/quiz')
       }
     } catch (failure) {
       if (failure instanceof MissingIdentityError) setError('O acesso está temporariamente indisponível. Tente novamente após a publicação do site.')
