@@ -98,3 +98,22 @@
 @keyframes slime-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
 [data-reduced-motion="true"] .slime-blob { animation: none; transition: none; }
 @media (prefers-reduced-motion: reduce) { .slime-blob { animation: none; transition: none; } }
+
+.slime-blob { background: radial-gradient(circle at 32% 25%, color-mix(in srgb, var(--slime-color, #b28bea) 35%, white) 0%, var(--slime-color, #b28bea) 57%, color-mix(in srgb, var(--slime-color, #b28bea) 65%, #35234f) 100%); touch-action: none; user-select: none; cursor: grab; }
+.slime-blob:active { cursor: grabbing; }
+.slime-blob.squish { transform: scaleX(1.12) scaleY(.84); }
+.slime-palette { display: grid; gap: 10px; justify-items: center; margin: 18px 0 4px; color: var(--muted); font-size: .9rem; }
+.slime-palette > span { display: inline-flex; align-items: center; gap: 7px; }
+.slime-swatches, .draw-palette { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+.slime-swatch, .draw-swatch { width: 30px; height: 30px; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px #b8b2c8; cursor: pointer; }
+.slime-swatch.selected, .draw-swatch.selected { outline: 3px solid var(--accent); outline-offset: 3px; }
+.draw-card > p { max-width: 700px; margin-bottom: 18px; }
+.draw-palette { justify-content: flex-start; margin: 20px 0; }
+.draw-swatch { width: 32px; height: 32px; }
+.draw-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.draw-tools label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .9rem; }
+.draw-tools input { accent-color: var(--accent); width: 110px; }
+.draw-tools .tool-active { border-color: var(--accent); background: var(--panel-soft); }
+.draw-canvas { display: block; width: 100%; height: auto; min-height: 210px; border: 1px solid var(--border); border-radius: 16px; background: #fff; cursor: crosshair; touch-action: none; }
+.draw-note { margin-top: 12px !important; color: var(--muted); font-size: .85rem; }
+@media (max-width: 600px) { .draw-canvas { min-height: 180px; } .draw-tools { align-items: flex-start; } }
