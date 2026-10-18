@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Check, Sparkles } from 'lucide-react'
+import { useMonisa } from '../../context/MonisaContext'
+import { api, jsonRequest } from '../../lib/api'
+import type { Profile } from '../../lib/preferences'
 import './Quiz.css'
 
 const questions = [
@@ -15,6 +18,7 @@ const questions = [
 
 export default function Quiz() {
   const navigate = useNavigate()
+  const { profile, setProfile } = useMonisa()
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [error, setError] = useState('')
@@ -22,21 +26,32 @@ export default function Quiz() {
   const progress = useMemo(() => Math.round(((step + 1) / questions.length) * 100), [step])
   const selected = answers[question.id] || ''
 
-  function finish() {
+  async function finish() {
     const result = { ...answers, completedAt: new Date().toISOString() }
     localStorage.setItem('monisa-learning-profile', JSON.stringify(result))
     localStorage.setItem('monisa-quiz-complete', 'true')
-    document.documentElement.dataset.theme = result.environment || 'dark'
-    document.documentElement.dataset.fontSize = result.text || 'normal'
-    document.documentElement.dataset.reducedMotion = 'true'
-    navigate('/loading', { replace: true })
+    if (profile) {
+      const updated = await api<Profile>('/api/profile', jsonRequest('PUT', {
+        ...profile,
+        subject: answers.subject || profile.subject,
+        preferences: {
+          ...profile.preferences,
+          theme: (answers.environment || profile.preferences.theme) as Profile['preferences']['theme'],
+          fontSize: (answers.text || profile.preferences.fontSize) as Profile['preferences']['fontSize'],
+          responseStyle: (answers.reading || profile.preferences.responseStyle) as Profile['preferences']['responseStyle'],
+          focusMode: answers.focus === 'focus',
+        },
+      }))
+      setProfile(updated)
+    }
+    navigate('/home', { replace: true })
   }
 
-  function next() {
+  async function next() {
     if (!selected) { setError('Escolha uma opção para continuar. Você pode alterar essa resposta depois.'); return }
     setError('')
     if (step < questions.length - 1) setStep(value => value + 1)
-    else finish()
+    else { try { await finish() } catch (failure) { setError(failure instanceof Error ? failure.message : 'Não foi possível salvar suas preferências. Tente novamente.') } }
   }
 
   return <main className="quiz-page">
