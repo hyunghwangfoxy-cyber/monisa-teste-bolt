@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
-import { BookOpen, Send, Sparkles, RotateCcw, MessageCircle, FileText, Plus, Trash2 } from 'lucide-react'
+import { BookOpen, Send, Sparkles, MessageCircle, FileText, Plus, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useMonisa } from '../../context/MonisaContext'
 import { api, jsonRequest } from '../../lib/api'
