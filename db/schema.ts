@@ -8,6 +8,7 @@ export const profiles = pgTable('profiles', {
   subject: text('subject').notNull().default(''),
   avatarKey: text('avatar_key'),
   preferences: jsonb('preferences').$type<Preferences>().notNull(),
+  learningProfile: jsonb('learning_profile').$type<Record<string, string>>(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
