@@ -12,8 +12,17 @@ export default async (request: Request) => authenticated(request, async user => 
       typeof body.bio !== 'string' || body.bio.length > 300 ||
       typeof body.subject !== 'string' || body.subject.length > 80) throw new HttpError(400, 'Revise o nome, a apresentação e a matéria de interesse.')
   const preferences = validatePreferences(body.preferences)
+  let learningProfile = profile.learningProfile
+  if (body.learningProfile !== undefined) {
+    if (body.learningProfile === null) learningProfile = null
+    else if (typeof body.learningProfile === 'object' && !Array.isArray(body.learningProfile)) {
+      const answers = body.learningProfile as Record<string, unknown>
+      if (Object.keys(answers).length > 12 || Object.values(answers).some(value => typeof value !== 'string' || value.length > 120)) throw new HttpError(400, 'Respostas do questionário inválidas.')
+      learningProfile = Object.fromEntries(Object.entries(answers).map(([key, value]) => [key.slice(0, 40), value as string]))
+    } else throw new HttpError(400, 'Respostas do questionário inválidas.')
+  }
   const [updated] = await getDatabase().update(profiles).set({
-    name: body.name.trim(), bio: body.bio.trim(), subject: body.subject.trim(), preferences, updatedAt: new Date(),
+    name: body.name.trim(), bio: body.bio.trim(), subject: body.subject.trim(), preferences, learningProfile, updatedAt: new Date(),
   }).where(eq(profiles.userId, user.id)).returning()
   return json(publicProfile(updated))
 })
