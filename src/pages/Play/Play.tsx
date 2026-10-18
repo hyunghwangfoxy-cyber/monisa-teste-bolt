@@ -10,7 +10,8 @@ function makeDeck() {
 }
 const gardenSymbols = ['🌼', '🌷', '🌻', '🌸', '🍀', '🪻']
 function makeGarden(target: string) {
-  return Array.from({ length: 12 }, (_, index) => ({ id: index, symbol: index < 4 ? target : gardenSymbols[Math.floor(Math.random() * gardenSymbols.length)] }))
+  const distractors = gardenSymbols.filter(symbol => symbol !== target)
+  return Array.from({ length: 12 }, (_, index) => ({ id: index, symbol: index < 4 ? target : distractors[Math.floor(Math.random() * distractors.length)] }))
     .sort(() => Math.random() - 0.5)
 }
 
