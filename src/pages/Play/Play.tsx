@@ -89,7 +89,7 @@ export default function Play() {
       <div className="block-scene" aria-label="Cenário de blocos mágicos">
         <div className="block-sky"><span className="block-cloud">☁️</span><span className="block-star">⭐</span><span className="block-hero" aria-label="Personagem">🧑‍🚀</span></div>
         <div className="break-block-grid">
-          {blocks.map(id => <button key={id} type="button" className={'break-block' + (broken.includes(id) ? ' broken' : '')} onClick={() => setBroken(old => old.includes(id) ? old : [...old, id])} aria-label={broken.includes(id) ? 'Bloco quebrado, estrela revelada' : 'Quebrar bloco ' + (id + 1)} disabled={broken.includes(id)}>{broken.includes(id) ? '⭐' : '🟪'}</button>)}
+          {blocks.map(id => <button key={id} type="button" className={'break-block' + (broken.includes(id) ? ' broken' : '')} onClick={() => setBroken(old => old.includes(id) ? old : [...old, id])} aria-label={broken.includes(id) ? 'Bloco quebrado, estrela revelada' : 'Quebrar bloco ' + (id + 1)} disabled={broken.includes(id)}><span className="block-symbol">{broken.includes(id) ? '⭐' : '✦'}</span></button>)}
         </div>
         <div className="block-ground" />
       </div>
