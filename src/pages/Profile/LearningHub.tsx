@@ -24,7 +24,7 @@ export default function LearningHub() {
     fetch('/api/google-news?q=' + encodeURIComponent(search), { signal: controller.signal })
       .then(async response => {
         if (!response.ok) throw new Error('Não foi possível carregar as notícias agora.')
-        return response.json() as Promise<{ articles: Article[] }>()
+        return response.json() as Promise<{ articles: Article[] }>
       })
       .then(data => setArticles(data.articles || []))
       .catch(failure => { if (!controller.signal.aborted) setError(failure instanceof Error ? failure.message : 'Erro ao buscar notícias.') })
