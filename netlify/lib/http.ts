@@ -77,6 +77,7 @@ export function publicProfile(profile: typeof profiles.$inferSelect) {
     bio: profile.bio,
     subject: profile.subject,
     preferences: profile.preferences,
+    learningProfile: profile.learningProfile,
     avatarUrl: profile.avatarKey ? `/api/avatar?v=${encodeURIComponent(profile.avatarKey)}` : null,
   }
 }
