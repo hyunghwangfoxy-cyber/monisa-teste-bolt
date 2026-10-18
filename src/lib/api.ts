@@ -1,4 +1,3 @@
-import { defaultPreferences } from './preferences'
 import type { Profile, ChatMessage } from './preferences'
 
 function readProfile(): Profile | null {
