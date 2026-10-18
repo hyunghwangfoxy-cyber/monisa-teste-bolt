@@ -20,7 +20,7 @@ export default function Quiz() {
   const navigate = useNavigate()
   const { profile, setProfile } = useMonisa()
   const [step, setStep] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [answers, setAnswers] = useState<Record<string, string>>(() => profile?.learningProfile || {})
   const [error, setError] = useState('')
   const question = questions[step]
   const progress = useMemo(() => Math.round(((step + 1) / questions.length) * 100), [step])
@@ -31,6 +31,7 @@ export default function Quiz() {
     if (profile) {
       const updated = await api<Profile>('/api/profile', jsonRequest('PUT', {
         ...profile,
+        learningProfile: result,
         subject: answers.subject || profile.subject,
         preferences: {
           ...profile.preferences,
