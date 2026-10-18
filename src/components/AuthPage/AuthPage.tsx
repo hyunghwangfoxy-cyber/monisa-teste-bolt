@@ -5,6 +5,7 @@ import { AuthError, MissingIdentityError, login, signup, requestPasswordRecovery
 import { Eye, EyeOff, ArrowRight, BookOpen } from 'lucide-react'
 import { useMonisa } from '../../context/MonisaContext'
 import logo from '../../assets/images/MONISA.png'
+import { api } from '../../lib/api'
 
 export default function AuthPage({ register = false }: { register?: boolean }) {
   const { user, loading, error: sessionError, recoveryRequired, finishRecovery } = useMonisa()
@@ -37,7 +38,12 @@ export default function AuthPage({ register = false }: { register?: boolean }) {
         }
       } else {
         await login(email.trim(), password)
-        navigate(localStorage.getItem('monisa-quiz-complete') === 'true' ? '/home' : '/quiz')
+        try {
+          const saved = await api<{ learningProfile: Record<string, string> | null }>('/api/profile')
+          navigate(saved.learningProfile?.completedAt ? '/home' : '/quiz')
+        } catch {
+          navigate('/quiz')
+        }
       }
     } catch (failure) {
       if (failure instanceof MissingIdentityError) setError('O acesso está temporariamente indisponível. Tente novamente após a publicação do site.')
