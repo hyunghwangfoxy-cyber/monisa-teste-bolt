@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { AuthError, MissingIdentityError, login, signup, requestPasswordRecovery, updateUser } from '@netlify/identity'
 import { Eye, EyeOff, ArrowRight, BookOpen } from 'lucide-react'
 import { useMonisa } from '../../context/MonisaContext'
 import logo from '../../assets/images/MONISA.png'
+import { api } from '../../lib/api'
 
 export default function AuthPage({ register = false }: { register?: boolean }) {
   const { user, loading, error: sessionError, recoveryRequired, finishRecovery } = useMonisa()
@@ -16,6 +17,16 @@ export default function AuthPage({ register = false }: { register?: boolean }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [destination, setDestination] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!user || recoveryRequired) { setDestination(null); return }
+    let active = true
+    api<{ learningProfile: Record<string, string> | null }>('/api/profile')
+      .then(saved => { if (active) setDestination(saved.learningProfile?.completedAt ? '/home' : '/quiz') })
+      .catch(() => { if (active) setDestination('/quiz') })
+    return () => { active = false }
+  }, [user?.id, recoveryRequired])
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -30,14 +41,19 @@ export default function AuthPage({ register = false }: { register?: boolean }) {
         navigate('/home')
       } else if (register) {
         const created = await signup(email.trim(), password, { full_name: name.trim() })
-        if (created.confirmedAt) navigate('/settings')
+        if (created.confirmedAt) navigate('/quiz')
         else {
-          setNotice('Conta criada! Confira sua caixa de entrada e confirme seu e-mail para entrar. Veja também a pasta de spam.')
+          setNotice('Conta criada! Confira sua caixa de entrada e confirme seu e-mail para entrar. Depois, você poderá acessar o quiz pelo menu.')
           setPassword('')
         }
       } else {
         await login(email.trim(), password)
-        navigate('/home')
+        try {
+          const saved = await api<{ learningProfile: Record<string, string> | null }>('/api/profile')
+          navigate(saved.learningProfile?.completedAt ? '/home' : '/quiz')
+        } catch {
+          navigate('/quiz')
+        }
       }
     } catch (failure) {
       if (failure instanceof MissingIdentityError) setError('O acesso está temporariamente indisponível. Tente novamente após a publicação do site.')
@@ -59,7 +75,7 @@ export default function AuthPage({ register = false }: { register?: boolean }) {
   }
 
   if (loading) return <div className="page-loading" role="status">Preparando seu espaço…</div>
-  if (user && !recoveryRequired) return <Navigate to="/home" replace />
+  if (user && !recoveryRequired) return destination ? <Navigate to={destination} replace /> : <div className="page-loading" role="status">Preparando seu espaço…</div>
 
   return <main className="auth-page">
     <section className="auth-story" aria-label="Sobre a Monisa">

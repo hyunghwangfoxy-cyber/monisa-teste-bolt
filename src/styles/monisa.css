@@ -215,3 +215,18 @@ textarea { resize: vertical; }
   .settings-fields { grid-template-columns: 1fr; }
   .study-sidebar .brand { font-size: 1.1rem; }
 }
+
+/* Conversas independentes e controles acessíveis */
+.chat-history { border: 1px solid var(--border); border-radius: 16px; padding: 16px; background: var(--panel); margin: 0 0 24px; }
+.chat-history-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
+.chat-history-heading > div { display: flex; flex-direction: column; gap: 4px; }
+.chat-history-heading strong { font-size: .92rem; }
+.chat-history-heading span { color: var(--muted); font-size: .76rem; }
+.chat-history-heading .primary-button { min-height: 40px; padding: 9px 13px; font-size: .8rem; }
+.chat-history-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+.chat-history-item { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; min-height: 40px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--page); color: var(--muted); text-align: left; font-size: .79rem; }
+.chat-history-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 210px; }
+.chat-history-item:hover, .chat-history-item.active { border-color: var(--accent); color: var(--text); background: var(--panel-soft); }
+.chat-history-item.active { box-shadow: inset 0 0 0 1px var(--accent); }
+.quiz-page { color: var(--text); }
+@media (max-width: 520px) { .chat-history-heading { align-items: stretch; flex-direction: column; } .chat-history-heading .primary-button { width: 100%; } .chat-history-list { flex-direction: column; } .chat-history-item { width: 100%; } .chat-history-item span { max-width: none; } }
