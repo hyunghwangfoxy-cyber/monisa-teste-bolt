@@ -37,7 +37,6 @@
 .block-scene { overflow: hidden; margin-top: 22px; padding: 18px 18px 0; border: 1px solid var(--border); border-radius: 18px; background: linear-gradient(180deg, #b9ddff 0%, #e8f3ff 72%, #b6e2ad 72%, #b6e2ad 100%); }
 .block-sky { position: relative; display: flex; align-items: center; justify-content: space-between; height: 68px; font-size: 1.7rem; }
 .block-hero { font-size: 2rem; animation: monisa-hop 1.6s ease-in-out infinite; }
-.block-star { position: absolute; left: 52%; top: 8px; }
 .break-block-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; max-width: 480px; margin: 0 auto; }
 .break-block { display: grid; place-items: center; aspect-ratio: 1.2; border: 2px solid #8b70d8; border-radius: 9px; background: #b9a4f3; box-shadow: inset -3px -4px 0 #8c73d3; font-size: clamp(1.2rem, 3vw, 1.8rem); transition: transform .15s, opacity .15s; }
 .break-block:hover:not(:disabled) { transform: translateY(-3px); }
@@ -84,3 +83,18 @@
 .runner-controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 18px; }
 .runner-controls button { justify-content: center; min-width: 150px; }
 .runner-ended { filter: saturate(.7); }
+
+.slime-card { text-align: center; overflow: hidden; }
+.slime-card > p { max-width: 680px; margin: 0 auto; }
+.slime-stage { display: grid; place-items: center; min-height: 270px; margin: 24px 0 18px; border: 1px solid var(--border); border-radius: 20px; background: radial-gradient(ellipse at 50% 80%, #e7ddff 0%, #f5f0ff 43%, #e7f5ff 100%); overflow: hidden; }
+.slime-blob { display: grid; place-items: center; width: min(55vw, 245px); aspect-ratio: 1.25; border: 3px solid #b6a0f2; border-radius: 48% 52% 42% 58% / 57% 44% 56% 43%; background: radial-gradient(circle at 32% 25%, #f7eaff 0%, #d8b8ff 22%, #b28bea 58%, #8b6acb 100%); box-shadow: inset -12px -15px 22px #7856b34d, inset 10px 9px 18px #fff8, 0 15px 28px #8b6acb33; color: #6d4a9c; font-size: 2.3rem; cursor: pointer; touch-action: manipulation; transition: transform .22s ease, border-radius .22s ease; animation: slime-float 3s ease-in-out infinite; }
+.slime-blob.squish { transform: scaleX(1.18) scaleY(.78); border-radius: 55% 45% 58% 42% / 43% 57% 43% 57%; }
+.slime-blob.stretch { transform: scaleX(.78) scaleY(1.12); border-radius: 42% 58% 43% 57% / 60% 40% 60% 40%; }
+.slime-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.slime-controls button { justify-content: center; min-width: 130px; }
+.slime-toggle { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; color: var(--muted); font-size: .9rem; }
+.slime-toggle input { accent-color: var(--accent); width: 18px; height: 18px; }
+.slime-note { margin-top: 14px !important; font-size: .85rem; color: var(--muted); }
+@keyframes slime-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
+[data-reduced-motion="true"] .slime-blob { animation: none; transition: none; }
+@media (prefers-reduced-motion: reduce) { .slime-blob { animation: none; transition: none; } }
