@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { logout } from '@netlify/identity'
-import { BookOpen, Settings2, UserRound, LogOut, X } from 'lucide-react'
+import { BookOpen, Settings2, UserRound, LogOut, X, Brain, Sparkles } from 'lucide-react'
 import { useMonisa } from '../../context/MonisaContext'
 import logo from '../../assets/images/MONISA.png'
 
@@ -15,9 +15,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
   useEffect(() => {
     if (!open) return
     navigation.current?.querySelector<HTMLAnchorElement>('nav a')?.focus()
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-    }
+    const handleKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose() }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [open, onClose])
@@ -37,7 +35,9 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
       <p className="sidebar-caption">SEU ESPAÇO DE APRENDIZAGEM</p>
       <nav aria-label="Menu principal">
         <NavLink to="/home" onClick={onClose}><BookOpen size={20} />Estudar com a Monisa</NavLink>
-        <NavLink to="/settings" onClick={onClose}><Settings2 size={20} />Meu jeito de aprender</NavLink>
+        <NavLink to="/quiz" onClick={onClose}><Sparkles size={20} />Meu perfil de aprendizagem</NavLink>
+        <NavLink to="/play" onClick={onClose}><Brain size={20} />Monisa Play</NavLink>
+        <NavLink to="/settings" onClick={onClose}><Settings2 size={20} />Acessibilidade</NavLink>
         <NavLink to="/profile" onClick={onClose}><UserRound size={20} />Meu perfil</NavLink>
       </nav>
       <div className="sidebar-note optional-detail"><span>Um passo de cada vez.</span><p>Você não precisa aprender como todo mundo. Só precisa encontrar seu jeito.</p></div>
