@@ -5,6 +5,8 @@ import Register from '../pages/Register/Register'
 import Home from '../pages/Home/Home'
 import Profile from '../pages/Profile/Profile'
 import Settings from '../pages/Settings/Settings'
+import Quiz from '../pages/Quiz/Quiz'
+import Play from '../pages/Play/Play'
 import StudyLayout from '../components/StudyLayout'
 import { useMonisa } from '../context/MonisaContext'
 
@@ -22,7 +24,8 @@ export default function AppRoutes() {
       <Route path="/chat" element={<Home />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/settings" element={<Settings />} />
-      <Route path="/quiz" element={<Navigate to="/settings" replace />} />
+      <Route path="/quiz" element={<Quiz />} />
+      <Route path="/play" element={<Play />} />
       <Route path="/loading" element={<Navigate to="/home" replace />} />
     </Route>
     <Route path="*" element={<Navigate to="/" replace />} />
