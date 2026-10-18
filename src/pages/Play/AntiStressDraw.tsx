@@ -36,7 +36,7 @@ export default function AntiStressDraw() {
       {colors.map(item => <button key={item.value} type="button" className={'draw-swatch' + (color === item.value && !erase ? ' selected' : '')} style={{ background: item.value }} onClick={() => { setColor(item.value); setErase(false) }} aria-label={item.name} aria-pressed={color === item.value && !erase} title={item.name} />)}
     </div>
     <div className="draw-tools">
-      <label>Espessura <input type="range" min="2" max="16" value={width} onChange={e => setWidth(Number(e.target.value)} /></label>
+      <label>Espessura <input type="range" min="2" max="16" value={width} onChange={e => setWidth(Number(e.target.value))} /></label>
       <button type="button" className={'secondary-button' + (erase ? ' tool-active' : '')} onClick={() => setErase(value => !value)}><Eraser size={16} /> {erase ? 'Pincel' : 'Borracha'}</button>
       <button type="button" className="secondary-button" onClick={() => { setStrokes([]); setCurrent(null) }}><RotateCcw size={16} /> Limpar</button>
     </div>
