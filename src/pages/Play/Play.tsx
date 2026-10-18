@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Brain, RotateCcw, Sparkles, Trophy, Wind, Blocks, Flower2, Heart, Gamepad2 } from 'lucide-react'
 import './Play.css'
+import MagicRunner from './MagicRunner'
 
 const symbols = ['🌙', '🌿', '⭐', '🎧', '🪐', '💜']
 type Game = 'memory' | 'blocks' | 'breathe' | 'garden' | 'runner'
