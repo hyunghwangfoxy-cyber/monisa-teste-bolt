@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { BookOpen, Settings2, UserRound, LogOut, X, Brain, Sparkles } from 'lucide-react'
 import { useMonisa } from '../../context/MonisaContext'
 import logo from '../../assets/images/MONISA.png'
 
 export default function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { profile } = useMonisa()
-  const navigate = useNavigate()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const navigation = useRef<HTMLElement>(null)
