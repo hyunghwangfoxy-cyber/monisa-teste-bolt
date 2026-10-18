@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Brain, RotateCcw, Sparkles, Trophy, Wind, Blocks, Flower2, Heart, Gamepad2 } from 'lucide-react'
+import { Brain, RotateCcw, Sparkles, Trophy, Wind, Blocks, Flower2, Heart, Gamepad2, Droplets } from 'lucide-react'
 import './Play.css'
 import MagicRunner from './MagicRunner'
+import SlimeASMR from './SlimeASMR'
 
 const symbols = ['🌙', '🌿', '⭐', '🎧', '🪐', '💜']
-type Game = 'memory' | 'blocks' | 'breathe' | 'garden' | 'runner'
+type Game = 'memory' | 'blocks' | 'breathe' | 'garden' | 'runner' | 'slime'
 
 function makeDeck() {
   return [...symbols, ...symbols].map((symbol, index) => ({ id: index, symbol })).sort(() => Math.random() - 0.5)
@@ -57,6 +58,24 @@ export default function Play() {
 
   function restartMemory() { setDeck(makeDeck()); setOpen([]); setMatched([]); setMoves(0); setHint(false) }
   function restartBlocks() { setBlocks(Array.from({ length: 20 }, (_, id) => id)); setBroken([]) }
+  function playBlockSound() {
+    try {
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+      if (!AudioContextClass) return
+      const context = new AudioContextClass()
+      const oscillator = context.createOscillator()
+      const gain = context.createGain()
+      oscillator.type = 'triangle'
+      oscillator.frequency.setValueAtTime(420, context.currentTime)
+      oscillator.frequency.exponentialRampToValueAtTime(150, context.currentTime + 0.09)
+      gain.gain.setValueAtTime(0.0001, context.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.12, context.currentTime + 0.012)
+      gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.12)
+      oscillator.connect(gain); gain.connect(context.destination)
+      oscillator.start(); oscillator.stop(context.currentTime + 0.13)
+      oscillator.onended = () => { void context.close() }
+    } catch { /* áudio opcional */ }
+  }
   function newGarden() {
     const nextTarget = gardenSymbols[Math.floor(Math.random() * gardenSymbols.length)]
     setTarget(nextTarget)
@@ -72,6 +91,7 @@ export default function Play() {
       <button type="button" className={game === 'breathe' ? 'active' : ''} onClick={() => setGame('breathe')}><Wind size={18} />Respira comigo</button>
       <button type="button" className={game === 'garden' ? 'active' : ''} onClick={() => setGame('garden')}><Flower2 size={18} />Jardim do foco</button>
       <button type="button" className={game === 'runner' ? 'active' : ''} onClick={() => setGame('runner')}><Gamepad2 size={18} />Corrida mágica</button>
+      <button type="button" className={game === 'slime' ? 'active' : ''} onClick={() => setGame('slime')}><Droplets size={18} />Slime ASMR</button>
     </nav>
 
     {game === 'memory' && <>
@@ -87,11 +107,11 @@ export default function Play() {
     </>}
 
     {game === 'blocks' && <div className="mini-game-card">
-      <div className="mini-game-copy"><span className="mini-game-tag"><Blocks size={16} /> FASE LIVRE</span><h2>Quebra-blocos mágicos</h2><p>Como num jogo de plataforma, sua missão é limpar o caminho. Toque nos blocos para quebrá-los e revelar estrelinhas. Não há vidas nem limite de tempo.</p></div>
+      <div className="mini-game-copy"><span className="mini-game-tag"><Blocks size={16} /> FASE LIVRE</span><h2>Quebra-blocos mágicos</h2><p>Como num jogo de plataforma, sua missão é limpar o caminho. Toque nos blocos para quebrá-los e ouvir um som suave. Não há vidas nem limite de tempo.</p></div>
       <div className="block-scene" aria-label="Cenário de blocos mágicos">
-        <div className="block-sky"><span className="block-cloud">☁️</span><span className="block-star">⭐</span><span className="block-hero" aria-label="Personagem">🧑‍🚀</span></div>
+        <div className="block-sky"><span className="block-cloud">☁️</span><span className="block-hero" aria-label="Personagem">🧑‍🚀</span></div>
         <div className="break-block-grid">
-          {blocks.map(id => <button key={id} type="button" className={'break-block' + (broken.includes(id) ? ' broken' : '')} onClick={() => setBroken(old => old.includes(id) ? old : [...old, id])} aria-label={broken.includes(id) ? 'Bloco quebrado, estrela revelada' : 'Quebrar bloco ' + (id + 1)} disabled={broken.includes(id)}><span className="block-symbol">{broken.includes(id) ? '⭐' : '✦'}</span></button>)}
+          {blocks.map(id => <button key={id} type="button" className={'break-block' + (broken.includes(id) ? ' broken' : '')} onClick={() => { if (!broken.includes(id)) { setBroken(old => [...old, id]); playBlockSound() } }} aria-label={broken.includes(id) ? 'Bloco quebrado, estrela revelada' : 'Quebrar bloco ' + (id + 1)} disabled={broken.includes(id)}><span className="block-symbol">{broken.includes(id) ? '⭐' : '✦'}</span></button>)}
         </div>
         <div className="block-ground" />
       </div>
@@ -100,6 +120,8 @@ export default function Play() {
     </div>}
 
     {game === 'runner' && <MagicRunner />}
+
+    {game === 'slime' && <SlimeASMR />}
 
     {game === 'breathe' && <div className="mini-game-card breathe-card">
       <span className="mini-game-tag"><Heart size={16} /> PAUSA OPCIONAL</span><h2>Respira comigo</h2><p>Se quiser, acompanhe o círculo: inspire suavemente quando ele crescer e solte o ar quando ele diminuir. Não precisa prender a respiração. Você pode parar a qualquer momento ou simplesmente observar.</p>
