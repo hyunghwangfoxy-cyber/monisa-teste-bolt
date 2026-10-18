@@ -51,7 +51,7 @@ export default async (request: Request) => authenticated(request, async user => 
   }
   if (typeof body.message !== 'string' || !body.message.trim() || body.message.length > 2000) throw new HttpError(400, 'Escreva uma pergunta com até 2.000 caracteres.')
   let conversationId = Number(body.conversationId)
-  let target
+  let target: { id: number; title: string } | undefined
   if (Number.isInteger(conversationId) && conversationId > 0) {
     const found = await db.select({ id: conversations.id, title: conversations.title }).from(conversations)
       .where(and(eq(conversations.id, conversationId), eq(conversations.userId, user.id))).limit(1)
