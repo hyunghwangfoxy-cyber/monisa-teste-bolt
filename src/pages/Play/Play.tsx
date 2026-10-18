@@ -99,6 +99,8 @@ export default function Play() {
       {broken.length === blocks.length && <p className="game-celebration" role="status">Caminho livre! Você encontrou todas as estrelas. ✨</p>}
     </div>}
 
+    {game === 'runner' && <MagicRunner />}
+
     {game === 'breathe' && <div className="mini-game-card breathe-card">
       <span className="mini-game-tag"><Heart size={16} /> PAUSA OPCIONAL</span><h2>Respira comigo</h2><p>Se quiser, acompanhe o círculo: inspire suavemente quando ele crescer e solte o ar quando ele diminuir. Não precisa prender a respiração. Você pode parar a qualquer momento ou simplesmente observar.</p>
       <div className={'breath-visual' + (breathing ? ' is-active ' + breathPhase : '')} role="img" aria-label={breathing ? breathPhase === 'in' ? 'Círculo crescendo: inspire suavemente se for confortável' : 'Círculo diminuindo: solte o ar se for confortável' : 'Círculo de respiração em repouso'}><div><Wind size={32} /><strong>{!breathing ? 'No seu ritmo' : breathPhase === 'in' ? 'Inspire' : 'Solte o ar'}</strong><span>{breathing ? 'Sem forçar' : 'Quando quiser, comece'}</span></div></div>
