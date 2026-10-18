@@ -69,3 +69,18 @@
 @media (max-width: 420px) { .game-picker button { font-size: .82rem; gap: 6px; } .garden-grid { gap: 8px; } .garden-flower { min-height: 56px; } }
 [data-reduced-motion="true"] .block-hero { animation: none; }
 [data-reduced-motion="true"] .breath-visual { transition: none; }
+
+.block-symbol { display: inline-grid; place-items: center; width: 100%; height: 100%; color: #fff8c5; font-size: clamp(1.5rem, 4vw, 2.2rem); text-shadow: 0 2px 8px #7860d9; }
+.break-block.broken .block-symbol { color: #d7a72c; text-shadow: 0 1px 4px #fff; }
+.runner-card { margin-top: 0; }
+.runner-score { margin: 14px 0; color: var(--muted); }
+.runner-score strong { color: var(--text); }
+.runner-world { position: relative; height: 230px; overflow: hidden; border: 1px solid #c7b6ff; border-radius: 18px; background: linear-gradient(180deg, #1b2352 0%, #594f91 70%, #b5a8ef 70%, #b5a8ef 100%); }
+.runner-sky-stars { position: absolute; top: 20px; left: 10%; color: #fff1a8; font-size: 1.25rem; }
+.runner-player { position: absolute; z-index: 2; bottom: 26px; left: 17%; font-size: 2.7rem; transition: bottom .18s ease-out; }
+.runner-player.jumping { bottom: 110px; }
+.runner-obstacle { position: absolute; z-index: 2; bottom: 25px; font-size: 2rem; transition: left .22s linear; }
+.runner-ground { position: absolute; inset: auto 0 0; height: 25px; display: flex; justify-content: space-around; align-items: center; color: #51428e; background: repeating-linear-gradient(135deg, #b9a9f0 0 16px, #d4c9ff 16px 32px); }
+.runner-controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 18px; }
+.runner-controls button { justify-content: center; min-width: 150px; }
+.runner-ended { filter: saturate(.7); }
