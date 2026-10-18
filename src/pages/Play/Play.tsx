@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Brain, RotateCcw, Sparkles, Trophy, Wind, Blocks, Flower2, Heart, Gamepad2, Droplets } from 'lucide-react'
+import { Brain, RotateCcw, Sparkles, Trophy, Wind, Blocks, Flower2, Heart, Gamepad2, Droplets, Pencil } from 'lucide-react'
 import './Play.css'
 import MagicRunner from './MagicRunner'
 import SlimeASMR from './SlimeASMR'
+import AntiStressDraw from './AntiStressDraw'
 
 const symbols = ['🌙', '🌿', '⭐', '🎧', '🪐', '💜']
-type Game = 'memory' | 'blocks' | 'breathe' | 'garden' | 'runner' | 'slime'
+type Game = 'memory' | 'blocks' | 'breathe' | 'garden' | 'runner' | 'slime' | 'draw'
 
 function makeDeck() {
   return [...symbols, ...symbols].map((symbol, index) => ({ id: index, symbol })).sort(() => Math.random() - 0.5)
@@ -92,6 +93,7 @@ export default function Play() {
       <button type="button" className={game === 'garden' ? 'active' : ''} onClick={() => setGame('garden')}><Flower2 size={18} />Jardim do foco</button>
       <button type="button" className={game === 'runner' ? 'active' : ''} onClick={() => setGame('runner')}><Gamepad2 size={18} />Corrida mágica</button>
       <button type="button" className={game === 'slime' ? 'active' : ''} onClick={() => setGame('slime')}><Droplets size={18} />Slime ASMR</button>
+      <button type="button" className={game === 'draw' ? 'active' : ''} onClick={() => setGame('draw')}><Pencil size={18} />Desenho antisstresse</button>
     </nav>
 
     {game === 'memory' && <>
@@ -122,6 +124,8 @@ export default function Play() {
     {game === 'runner' && <MagicRunner />}
 
     {game === 'slime' && <SlimeASMR />}
+
+    {game === 'draw' && <AntiStressDraw />}
 
     {game === 'breathe' && <div className="mini-game-card breathe-card">
       <span className="mini-game-tag"><Heart size={16} /> PAUSA OPCIONAL</span><h2>Respira comigo</h2><p>Se quiser, acompanhe o círculo: inspire suavemente quando ele crescer e solte o ar quando ele diminuir. Não precisa prender a respiração. Você pode parar a qualquer momento ou simplesmente observar.</p>
