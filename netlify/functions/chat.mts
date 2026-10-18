@@ -45,6 +45,10 @@ export default async (request: Request) => authenticated(request, async user => 
   }
 
   const body = await readJson(request)
+  if (body.action === 'create') {
+    const [created] = await db.insert(conversations).values({ userId: user.id, title: 'Nova conversa' }).returning({ id: conversations.id })
+    return json({ conversations: await listConversations(), conversationId: created.id, messages: [] })
+  }
   if (typeof body.message !== 'string' || !body.message.trim() || body.message.length > 2000) throw new HttpError(400, 'Escreva uma pergunta com até 2.000 caracteres.')
   let conversationId = Number(body.conversationId)
   let target
