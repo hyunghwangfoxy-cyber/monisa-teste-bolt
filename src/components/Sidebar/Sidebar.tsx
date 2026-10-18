@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { logout } from '@netlify/identity'
 import { BookOpen, Settings2, UserRound, LogOut, X, Brain, Sparkles } from 'lucide-react'
 import { useMonisa } from '../../context/MonisaContext'
 import logo from '../../assets/images/MONISA.png'
@@ -23,7 +22,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
   async function exit() {
     setBusy(true)
     setError('')
-    try { await logout(); navigate('/login', { replace: true }) }
+    try { localStorage.removeItem('monisa-demo-profile'); localStorage.removeItem('monisa-demo-messages'); localStorage.removeItem('monisa-learning-profile'); localStorage.removeItem('monisa-quiz-complete'); window.location.href = '/' }
     catch { setError('Não foi possível sair. Tente novamente.'); setBusy(false) }
   }
 
