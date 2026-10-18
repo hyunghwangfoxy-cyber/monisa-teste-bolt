@@ -28,8 +28,6 @@ export default function Quiz() {
 
   async function finish() {
     const result = { ...answers, completedAt: new Date().toISOString() }
-    localStorage.setItem('monisa-learning-profile', JSON.stringify(result))
-    localStorage.setItem('monisa-quiz-complete', 'true')
     if (profile) {
       const updated = await api<Profile>('/api/profile', jsonRequest('PUT', {
         ...profile,
@@ -44,6 +42,8 @@ export default function Quiz() {
       }))
       setProfile(updated)
     }
+    localStorage.setItem('monisa-learning-profile', JSON.stringify(result))
+    localStorage.setItem('monisa-quiz-complete', 'true')
     navigate('/home', { replace: true })
   }
 
