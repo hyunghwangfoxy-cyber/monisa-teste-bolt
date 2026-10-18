@@ -35,7 +35,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
       <p className="sidebar-caption">SEU ESPAÇO DE APRENDIZAGEM</p>
       <nav aria-label="Menu principal">
         <NavLink to="/home" onClick={onClose}><BookOpen size={20} />Estudar com a Monisa</NavLink>
-        <NavLink to="/quiz" onClick={onClose}><Sparkles size={20} />Meu perfil de aprendizagem</NavLink>
+        <NavLink to="/quiz" onClick={onClose}><Sparkles size={20} />Descobrir conteúdos</NavLink>
         <NavLink to="/play" onClick={onClose}><Brain size={20} />Monisa Play</NavLink>
         <NavLink to="/settings" onClick={onClose}><Settings2 size={20} />Acessibilidade</NavLink>
         <NavLink to="/profile" onClick={onClose}><UserRound size={20} />Meu perfil</NavLink>
