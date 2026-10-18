@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Brain, RotateCcw, Sparkles, Trophy, Wind, Blocks, Flower2, Heart } from 'lucide-react'
+import { Brain, RotateCcw, Sparkles, Trophy, Wind, Blocks, Flower2, Heart, Gamepad2 } from 'lucide-react'
 import './Play.css'
 
 const symbols = ['🌙', '🌿', '⭐', '🎧', '🪐', '💜']
-type Game = 'memory' | 'blocks' | 'breathe' | 'garden'
+type Game = 'memory' | 'blocks' | 'breathe' | 'garden' | 'runner'
 
 function makeDeck() {
   return [...symbols, ...symbols].map((symbol, index) => ({ id: index, symbol })).sort(() => Math.random() - 0.5)
@@ -70,6 +70,7 @@ export default function Play() {
       <button type="button" className={game === 'blocks' ? 'active' : ''} onClick={() => setGame('blocks')}><Blocks size={18} />Quebra-blocos</button>
       <button type="button" className={game === 'breathe' ? 'active' : ''} onClick={() => setGame('breathe')}><Wind size={18} />Respira comigo</button>
       <button type="button" className={game === 'garden' ? 'active' : ''} onClick={() => setGame('garden')}><Flower2 size={18} />Jardim do foco</button>
+      <button type="button" className={game === 'runner' ? 'active' : ''} onClick={() => setGame('runner')}><Gamepad2 size={18} />Corrida mágica</button>
     </nav>
 
     {game === 'memory' && <>
