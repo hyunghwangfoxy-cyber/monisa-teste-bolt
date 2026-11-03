@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { BookOpen, Settings2, UserRound, LogOut, X, Brain, Sparkles } from 'lucide-react'
+import { BookOpen, Settings2, UserRound, LogOut, X, Brain, Sparkles, CircleHelp } from 'lucide-react'
 import { useMonisa } from '../../context/MonisaContext'
 import logo from '../../assets/images/MONISA.png'
 
@@ -36,6 +36,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
         <NavLink to="/quiz" onClick={onClose}><Sparkles size={20} />Descobrir conteúdos</NavLink>
         <NavLink to="/play" onClick={onClose}><Brain size={20} />Monisa Play</NavLink>
         <NavLink to="/settings" onClick={onClose}><Settings2 size={20} />Acessibilidade</NavLink>
+        <NavLink to="/faq" onClick={onClose}><CircleHelp size={20} />Dúvidas frequentes</NavLink>
         <NavLink to="/profile" onClick={onClose}><UserRound size={20} />Meu perfil</NavLink>
       </nav>
       <div className="sidebar-note optional-detail"><span>Um passo de cada vez.</span><p>Você não precisa aprender como todo mundo. Só precisa encontrar seu jeito.</p></div>
