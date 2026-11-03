@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import './FAQ.css'
 import { BookOpen, Brain, Palette, Sparkles, UserRound, ChevronDown, Search, Lightbulb } from 'lucide-react'
 
 const topics = [
