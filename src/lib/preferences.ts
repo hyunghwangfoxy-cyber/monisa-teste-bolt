@@ -18,12 +18,22 @@ export const defaultPreferences: Preferences = {
   breakMinutes: 25,
 }
 
+export interface QuizAnswers {
+  learningStyle: string
+  visualTheme: string
+  fontSize: string
+  studyPace: string
+  firstSubject: string
+}
+
 export interface Profile {
   name: string
   bio: string
   subject: string
   avatarUrl: string | null
   preferences: Preferences
+  quizAnswers: QuizAnswers | null
+  quizCompleted: boolean
 }
 
 export interface ChatMessage {
