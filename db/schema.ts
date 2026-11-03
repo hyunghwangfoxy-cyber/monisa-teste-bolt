@@ -1,5 +1,5 @@
-import { integer, jsonb, pgTable, serial, text, timestamp, index } from 'drizzle-orm/pg-core'
-import type { Preferences } from '../src/lib/preferences.js'
+import { boolean, integer, jsonb, pgTable, serial, text, timestamp, index } from 'drizzle-orm/pg-core'
+import type { Preferences, QuizAnswers } from '../src/lib/preferences.js'
 
 export const profiles = pgTable('profiles', {
   userId: text('user_id').primaryKey(),
@@ -8,6 +8,8 @@ export const profiles = pgTable('profiles', {
   subject: text('subject').notNull().default(''),
   avatarKey: text('avatar_key'),
   preferences: jsonb('preferences').$type<Preferences>().notNull(),
+  quizAnswers: jsonb('quiz_answers').$type<QuizAnswers | null>(),
+  quizCompleted: boolean('quiz_completed').notNull().default(false),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
