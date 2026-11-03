@@ -3,12 +3,10 @@ import { eq } from 'drizzle-orm'
 import { getDatabase } from '../../db/index.js'
 import { profiles } from '../../db/schema.js'
 import { defaultPreferences } from '../../src/lib/preferences.js'
-import type { Preferences } from '../../src/lib/preferences.js'
+import type { Preferences, QuizAnswers } from '../../src/lib/preferences.js'
 
 export class HttpError extends Error {
-  constructor(public status: number, message: string) {
-    super(message)
-  }
+  constructor(public status: number, message: string) { super(message) }
 }
 
 export function json(data: unknown, status = 200) {
@@ -38,9 +36,7 @@ export async function readJson(request: Request) {
     const value: unknown = JSON.parse(text)
     if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error()
     return value as Record<string, unknown>
-  } catch {
-    throw new HttpError(400, 'Os dados enviados são inválidos.')
-  }
+  } catch { throw new HttpError(400, 'Os dados enviados são inválidos.') }
 }
 
 export function validatePreferences(value: unknown): Preferences {
@@ -54,29 +50,40 @@ export function validatePreferences(value: unknown): Preferences {
     throw new HttpError(400, 'Escolha opções válidas de acessibilidade.')
   }
   return {
-    theme: input.theme as Preferences['theme'],
-    fontSize: input.fontSize as Preferences['fontSize'],
-    responseStyle: input.responseStyle as Preferences['responseStyle'],
-    reducedMotion: input.reducedMotion as boolean,
-    simpleLanguage: input.simpleLanguage as boolean,
-    focusMode: input.focusMode as boolean,
-    breakMinutes: input.breakMinutes,
+    theme: input.theme as Preferences['theme'], fontSize: input.fontSize as Preferences['fontSize'],
+    responseStyle: input.responseStyle as Preferences['responseStyle'], reducedMotion: input.reducedMotion as boolean,
+    simpleLanguage: input.simpleLanguage as boolean, focusMode: input.focusMode as boolean, breakMinutes: input.breakMinutes,
   }
+}
+
+export function validateQuizAnswers(value: unknown): QuizAnswers {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new HttpError(400, 'Responda às perguntas para continuar.')
+  const a = value as Record<string, unknown>
+  const allowed: Record<keyof QuizAnswers, string[]> = {
+    learningStyle: ['textos', 'videos', 'audio', 'visual'],
+    visualTheme: ['dark', 'light', 'blue', 'custom'],
+    fontSize: ['normal', 'large', 'extra-large'],
+    studyPace: ['fast', 'moderate', 'calm'],
+    firstSubject: ['matematica', 'portugues', 'ingles', 'programacao', 'outra'],
+  }
+  for (const key of Object.keys(allowed) as (keyof QuizAnswers)[]) {
+    if (typeof a[key] !== 'string' || !allowed[key].includes(a[key] as string)) throw new HttpError(400, 'Uma ou mais respostas do quiz são inválidas.')
+  }
+  return a as QuizAnswers
 }
 
 export async function ensureProfile(user: { id: string; name?: string | null }) {
   const db = getDatabase()
-  await db.insert(profiles).values({ userId: user.id, name: user.name?.slice(0, 80) || 'Estudante', preferences: defaultPreferences }).onConflictDoNothing()
+  await db.insert(profiles).values({ userId: user.id, name: user.name?.slice(0, 80) || 'Estudante', preferences: defaultPreferences, quizCompleted: false }).onConflictDoNothing()
   const [profile] = await db.select().from(profiles).where(eq(profiles.userId, user.id))
   return profile
 }
 
 export function publicProfile(profile: typeof profiles.$inferSelect) {
   return {
-    name: profile.name,
-    bio: profile.bio,
-    subject: profile.subject,
-    preferences: profile.preferences,
+    name: profile.name, bio: profile.bio, subject: profile.subject,
+    preferences: profile.preferences, quizAnswers: profile.quizAnswers ?? null,
+    quizCompleted: profile.quizCompleted,
     avatarUrl: profile.avatarKey ? `/api/avatar?v=${encodeURIComponent(profile.avatarKey)}` : null,
   }
 }
