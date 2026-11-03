@@ -30,7 +30,7 @@ export default function AuthPage({ register = false }: { register?: boolean }) {
         navigate('/home')
       } else if (register) {
         const created = await signup(email.trim(), password, { full_name: name.trim() })
-        if (created.confirmedAt) navigate('/settings')
+        if (created.confirmedAt) navigate('/quiz')
         else {
           setNotice('Conta criada! Confira sua caixa de entrada e confirme seu e-mail para entrar. Veja também a pasta de spam.')
           setPassword('')
