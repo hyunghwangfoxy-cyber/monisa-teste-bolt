@@ -99,16 +99,15 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
     return await saveProfile({ ...profile, avatarUrl }) as T
   }
 
-  if (path.startsWith('/api/chat')) {
-    let messages = readDemoMessages()
-    if (method === 'POST') {
-      const body = JSON.parse(String(options.body || '{}')) as { message?: string }
-      if (body.message) {
-        messages = [...messages, { id: Date.now(), role: 'user', content: body.message }, { id: Date.now() + 1, role: 'assistant', content: 'A área de conversas ainda está em modo de demonstração nesta versão.' }]
-        localStorage.setItem('monisa-demo-messages', JSON.stringify(messages))
-      }
-    }
-    return { messages, conversations: [{ id: 1, title: 'Conversa' }], conversationId: 1 } as T
+  if (path.startsWith('/api/chat') || path.startsWith('/api/discover')) {
+    const { data: sessionData } = await supabase.auth.getSession()
+    const accessToken = sessionData.session?.access_token
+    const headers = new Headers(options.headers)
+    if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`)
+    const response = await fetch(path, { ...options, headers, credentials: 'same-origin' })
+    const data = await response.json().catch(() => null)
+    if (!response.ok) throw new Error(data?.error || 'Não foi possível concluir. Tente novamente.')
+    return data as T
   }
 
   const response = await fetch(path, { ...options, credentials: 'same-origin' })
