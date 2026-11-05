@@ -1,4 +1,3 @@
-import OpenAI from 'openai'
 import { createClient } from '@supabase/supabase-js'
 
 type RequestLike = {
@@ -11,6 +10,14 @@ type ResponseLike = {
   status(code: number): ResponseLike
   json(value: unknown): void
   setHeader(name: string, value: string): void
+}
+
+type GeminiResponse = {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{ text?: string }>
+    }
+  }>
 }
 
 function fail(res: ResponseLike, status: number, error: string) {
@@ -30,7 +37,7 @@ export default async function handler(req: RequestLike, res: ResponseLike) {
 
   const authorization = req.headers.authorization
   const bearer = Array.isArray(authorization) ? authorization[0] : authorization
-  const token = bearer?.match(/^Bearer\s+(.+)$/i)?.[1]
+  const token = bearer?.match(/^Bearer\\s+(.+)$/i)?.[1]
   const url = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
   const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY
   if (!url || !key) return fail(res, 503, 'A conexão com o Supabase não está configurada no servidor.')
@@ -92,7 +99,8 @@ export default async function handler(req: RequestLike, res: ResponseLike) {
   }
 
   if (typeof body.message !== 'string' || !body.message.trim() || body.message.length > 2000) return fail(res, 400, 'Escreva uma pergunta com até 2.000 caracteres.')
-  if (!process.env.OPENAI_API_KEY) return fail(res, 503, 'A IA ainda não foi ativada. Adicione OPENAI_API_KEY nas variáveis de ambiente da Vercel.')
+  const geminiApiKey = process.env.GEMINI_API_KEY
+  if (!geminiApiKey) return fail(res, 503, 'A IA ainda não foi ativada. Adicione GEMINI_API_KEY nas variáveis de ambiente da Vercel.')
 
   let targetId = Number(body.conversationId)
   let title = body.message.trim().slice(0, 54)
@@ -108,21 +116,43 @@ export default async function handler(req: RequestLike, res: ResponseLike) {
 
   const { data: history, error: historyError } = await supabase.from('study_messages').select('role,content').eq('user_id', userId).eq('conversation_id', targetId).order('id', { ascending: false }).limit(20)
   if (historyError) return fail(res, 503, 'Não foi possível recuperar o contexto da conversa.')
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 45000, maxRetries: 1 })
+
+  const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash'
+  const contents = [
+    ...(history || []).reverse().map(message => ({
+      role: message.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: message.content }],
+    })),
+    { role: 'user', parts: [{ text: body.message.trim() }] },
+  ]
+
   let answer = ''
   try {
-    const completion = await client.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
-      max_completion_tokens: 1400,
-      messages: [
-        { role: 'system', content: instructions },
-        ...(history || []).reverse().map(message => ({ role: message.role as 'user' | 'assistant', content: message.content })),
-        { role: 'user', content: body.message.trim() },
-      ],
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': geminiApiKey,
+      },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: instructions }] },
+        contents,
+        generationConfig: {
+          maxOutputTokens: 1400,
+          temperature: 0.7,
+        },
+      }),
+      signal: AbortSignal.timeout(45000),
     })
-    answer = completion.choices[0]?.message.content?.trim() || ''
+
+    if (response.status === 429) return fail(res, 503, 'O Gemini atingiu o limite temporário de solicitações. Aguarde um pouco e tente novamente.')
+    if (response.status === 401 || response.status === 403) return fail(res, 503, 'A chave do Gemini não foi aceita. Confira GEMINI_API_KEY nas variáveis de ambiente da Vercel.')
+    if (!response.ok) return fail(res, 503, 'O Gemini não conseguiu responder agora. Confira o modelo e tente novamente.')
+
+    const result = await response.json() as GeminiResponse
+    answer = result.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim() || ''
   } catch {
-    return fail(res, 503, 'A Monisa não conseguiu responder agora. Tente novamente em instantes.')
+    return fail(res, 503, 'A Monisa não conseguiu se conectar ao Gemini agora. Tente novamente em instantes.')
   }
   if (!answer) return fail(res, 503, 'A Monisa não recebeu uma resposta válida. Tente novamente.')
 
