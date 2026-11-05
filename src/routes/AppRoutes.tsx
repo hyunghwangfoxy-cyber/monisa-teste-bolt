@@ -9,6 +9,7 @@ import Quiz from '../pages/Quiz/Quiz'
 import LearningHub from '../pages/Profile/LearningHub'
 import Play from '../pages/Play/Play'
 import FAQ from '../pages/FAQ/FAQ'
+import Discover from '../pages/Discover/Discover'
 import StudyLayout from '../components/StudyLayout'
 import { useMonisa } from '../context/MonisaContext'
 
@@ -27,6 +28,7 @@ export default function AppRoutes() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="/faq" element={<FAQ />} />
+      <Route path="/discover" element={<Discover />} />
       <Route path="/quiz" element={profileLoading && !profile ? <div className="page-loading" role="status">Preparando seu perfil de aprendizagem…</div> : profile?.learningProfile?.completedAt ? <LearningHub /> : <Quiz />} />
       <Route path="/play" element={<Play />} />
       <Route path="/loading" element={<Navigate to="/home" replace />} />
