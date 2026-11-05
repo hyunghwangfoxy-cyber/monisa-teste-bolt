@@ -37,7 +37,7 @@ export default async function handler(req: RequestLike, res: ResponseLike) {
 
   const authorization = req.headers.authorization
   const bearer = Array.isArray(authorization) ? authorization[0] : authorization
-  const token = bearer?.match(/^Bearer\\s+(.+)$/i)?.[1]
+  const token = bearer?.match(/^Bearer\s+(.+)$/i)?.[1]
   const url = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
   const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY
   if (!url || !key) return fail(res, 503, 'A conexão com o Supabase não está configurada no servidor.')
