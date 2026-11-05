@@ -13,13 +13,14 @@ import StudyLayout from '../components/StudyLayout'
 import { useMonisa } from '../context/MonisaContext'
 
 export default function AppRoutes() {
-  const { loading, profile, profileLoading } = useMonisa()
+  const { loading, user, profile, profileLoading } = useMonisa()
   if (loading) return <div className="page-loading" role="status">Preparando a Monisa…</div>
+  const destination = profile?.learningProfile?.completedAt ? '/home' : '/quiz'
   return <Routes>
-    <Route path="/" element={profile ? <Navigate to={profile.learningProfile?.completedAt ? '/home' : '/quiz'} replace /> : <Welcome />} />
-    <Route path="/welcome" element={<Welcome />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/register" element={<Register />} />
+    <Route path="/" element={user ? <Navigate to={destination} replace /> : <Welcome />} />
+    <Route path="/welcome" element={user ? <Navigate to={destination} replace /> : <Welcome />} />
+    <Route path="/login" element={user ? <Navigate to={destination} replace /> : <Login />} />
+    <Route path="/register" element={user ? <Navigate to={destination} replace /> : <Register />} />
     <Route element={<StudyLayout />}>
       <Route path="/home" element={<Home />} />
       <Route path="/chat" element={<Home />} />
