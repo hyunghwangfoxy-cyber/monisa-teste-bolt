@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import type { Session, User } from '@supabase/supabase-js'
+import type { User } from '@supabase/supabase-js'
 import { MonisaContext } from './MonisaContext'
 import { api } from '../lib/api'
 import { applyPreferences, defaultPreferences } from '../lib/preferences'
@@ -15,9 +15,7 @@ export default function MonisaProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState('')
   const [recoveryRequired, setRecoveryRequired] = useState(false)
 
-  const setProfile = useCallback((next: Profile) => {
-    setProfileState(next)
-  }, [])
+  const setProfile = useCallback((next: Profile) => setProfileState(next), [])
 
   const refreshProfile = useCallback(async () => {
     if (!supabaseConfigured) {
@@ -47,34 +45,42 @@ export default function MonisaProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true
     if (!supabaseConfigured) {
-      setError('A conexão com o Supabase ainda não foi configurada. Adicione as variáveis VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY na Vercel.')
+      setError('A conexão com o Supabase ainda não foi configurada. Adicione VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY na Vercel.')
       setLoading(false)
       return
     }
 
-    supabase.auth.getSession().then(async ({ data, error: sessionError }) => {
+    const initialize = async () => {
+      const { data, error: sessionError } = await supabase.auth.getSession()
       if (!active) return
       if (sessionError) setError('Não foi possível recuperar sua sessão. Entre novamente.')
-      const session = data.session
-      setUser(session?.user ?? null)
-      setLoading(false)
-      if (session?.user) {
-        try { await refreshProfile() } catch { /* A tela oferece nova tentativa. */ }
+      const sessionUser = data.session?.user ?? null
+      setUser(sessionUser)
+      if (sessionUser) {
+        setProfileLoading(true)
+        try { setProfile(await api<Profile>('/api/profile')) }
+        catch (failure) { setError(failure instanceof Error ? failure.message : 'Não foi possível carregar seu perfil.') }
+        finally { if (active) setProfileLoading(false) }
       }
-    })
+      if (active) setLoading(false)
+    }
+    void initialize()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session: Session | null) => {
-      if (!active) return
-      setUser(session?.user ?? null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active || event === 'INITIAL_SESSION') return
+      const nextUser = session?.user ?? null
+      setUser(nextUser)
       if (event === 'PASSWORD_RECOVERY') setRecoveryRequired(true)
-      if (!session?.user) {
+      if (!nextUser) {
         setProfileState(null)
         setRecoveryRequired(false)
+        return
       }
-      setLoading(false)
-      if (session?.user) window.setTimeout(() => {
-        if (active) refreshProfile().catch(() => undefined)
-      }, 0)
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
+        window.setTimeout(() => {
+          if (active) void refreshProfile().catch(() => undefined)
+        }, 0)
+      }
     })
 
     return () => {
@@ -83,9 +89,7 @@ export default function MonisaProvider({ children }: { children: ReactNode }) {
     }
   }, [refreshProfile])
 
-  useEffect(() => {
-    applyPreferences(profile?.preferences || defaultPreferences)
-  }, [profile])
+  useEffect(() => { applyPreferences(profile?.preferences || defaultPreferences) }, [profile])
 
   return <MonisaContext.Provider value={{
     user, loading, profile, profileLoading, error, recoveryRequired,
