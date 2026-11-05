@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
-import { AuthError, MissingIdentityError, login, signup, requestPasswordRecovery, updateUser } from '@netlify/identity'
 import { Eye, EyeOff, ArrowRight, BookOpen } from 'lucide-react'
 import { useMonisa } from '../../context/MonisaContext'
 import logo from '../../assets/images/MONISA.png'
 import { api } from '../../lib/api'
+import { supabase, supabaseConfigured } from '../../lib/supabase'
 
 export default function AuthPage({ register = false }: { register?: boolean }) {
   const { user, loading, error: sessionError, recoveryRequired, finishRecovery } = useMonisa()
@@ -35,19 +35,31 @@ export default function AuthPage({ register = false }: { register?: boolean }) {
     setError('')
     setNotice('')
     try {
+      if (!supabaseConfigured) throw new Error('A conexão ainda não foi configurada. Adicione as variáveis do Supabase na Vercel e publique o Preview novamente.')
       if (recoveryRequired) {
-        await updateUser({ password })
+        const { error: updateError } = await supabase.auth.updateUser({ password })
+        if (updateError) throw updateError
         finishRecovery()
-        navigate('/home')
+        setNotice('Senha atualizada! Entre com sua nova senha.')
+        navigate('/login', { replace: true })
       } else if (register) {
-        const created = await signup(email.trim(), password, { full_name: name.trim() })
-        if (created.confirmedAt) navigate('/quiz')
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email: email.trim().toLowerCase(),
+          password,
+          options: {
+            data: { full_name: name.trim() },
+            emailRedirectTo: `${window.location.origin}/login`,
+          },
+        })
+        if (signUpError) throw signUpError
+        if (data.session) navigate('/quiz')
         else {
-          setNotice('Conta criada! Confira sua caixa de entrada e confirme seu e-mail para entrar. Depois, você poderá acessar o quiz pelo menu.')
+          setNotice('Conta criada! Confira seu e-mail e confirme o cadastro. Depois, volte aqui para entrar.')
           setPassword('')
         }
       } else {
-        await login(email.trim(), password)
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password })
+        if (signInError) throw signInError
         try {
           const saved = await api<{ learningProfile: Record<string, string> | null }>('/api/profile')
           navigate(saved.learningProfile?.completedAt ? '/home' : '/quiz')
@@ -56,21 +68,26 @@ export default function AuthPage({ register = false }: { register?: boolean }) {
         }
       }
     } catch (failure) {
-      if (failure instanceof MissingIdentityError) setError('O acesso está temporariamente indisponível. Tente novamente após a publicação do site.')
-      else if (failure instanceof AuthError && failure.status === 401) setError('Não foi possível entrar. Confira o e-mail, a senha e a confirmação por e-mail.')
-      else if (register) setError('Não foi possível criar a conta. Confira os dados ou tente entrar se já tem uma conta.')
-      else setError('Não foi possível concluir. Confira se seu e-mail foi confirmado e tente novamente.')
+      const message = failure instanceof Error ? failure.message : ''
+      if (message.toLowerCase().includes('already registered')) setError('Este e-mail já tem uma conta. Tente entrar.')
+      else if (message.toLowerCase().includes('invalid login credentials')) setError('E-mail ou senha incorretos.')
+      else if (message.toLowerCase().includes('email not confirmed')) setError('Confirme seu e-mail antes de entrar. Confira também a caixa de spam.')
+      else setError(message || 'Não foi possível concluir. Confira os dados e tente novamente.')
     } finally { setBusy(false) }
   }
 
   async function recover() {
     if (!email.trim()) { setError('Preencha seu e-mail para receber o link de recuperação.'); return }
+    if (!supabaseConfigured) { setError('A conexão com o Supabase ainda não foi configurada.'); return }
     setBusy(true)
     setError('')
     try {
-      await requestPasswordRecovery(email.trim())
+      const { error: recoveryError } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+        redirectTo: `${window.location.origin}/login`,
+      })
+      if (recoveryError) throw recoveryError
       setNotice('Se houver uma conta com este e-mail, você receberá um link para redefinir a senha.')
-    } catch { setError('Não foi possível enviar o link agora. Tente novamente.') }
+    } catch { setError('Não foi possível enviar o link agora. Confira o e-mail e tente novamente.') }
     finally { setBusy(false) }
   }
 
@@ -90,14 +107,15 @@ export default function AuthPage({ register = false }: { register?: boolean }) {
         <span className="eyebrow">BEM-VINDO AO SEU ESPAÇO</span>
         <h2>{recoveryRequired ? 'Uma nova senha' : register ? 'Vamos começar?' : 'Que bom ter você aqui.'}</h2>
         <p>{recoveryRequired ? 'Escolha uma senha segura para voltar aos estudos.' : register ? 'Crie sua conta e personalize sua experiência.' : 'Entre para continuar aprendendo do seu jeito.'}</p>
+        {!supabaseConfigured && <p className="form-error" role="alert">A conexão do banco ainda precisa ser configurada na Vercel.</p>}
         <form onSubmit={submit} className="stack-form">
           {register && !recoveryRequired && <label>Como podemos chamar você?<input autoComplete="name" required maxLength={80} value={name} onChange={event => setName(event.target.value)} placeholder="Seu nome" /></label>}
           {!recoveryRequired && <label>E-mail<input type="email" autoComplete="email" required maxLength={254} value={email} onChange={event => setEmail(event.target.value)} placeholder="voce@exemplo.com" /></label>}
           <label>Senha<div className="password-field"><input type={showPassword ? 'text' : 'password'} autoComplete={register || recoveryRequired ? 'new-password' : 'current-password'} required minLength={register || recoveryRequired ? 8 : 1} maxLength={128} value={password} onChange={event => setPassword(event.target.value)} placeholder={register || recoveryRequired ? 'Pelo menos 8 caracteres' : 'Sua senha'} /><button type="button" aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'} aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeOff size={19} /> : <Eye size={19} />}</button></div></label>
           {(error || sessionError) && <p className="form-error" role="alert">{error || sessionError}</p>}
           {notice && <p className="form-success" role="status">{notice}</p>}
-          <button className="primary-button" disabled={busy} type="submit">{busy ? 'Aguarde um instante…' : recoveryRequired ? 'Salvar nova senha' : register ? 'Criar minha conta' : 'Entrar no meu espaço'}<ArrowRight size={18} aria-hidden="true" /></button>
-          {!register && !recoveryRequired && <button className="text-button" type="button" disabled={busy} onClick={recover}>Esqueci minha senha</button>}
+          <button className="primary-button" disabled={busy || !supabaseConfigured} type="submit">{busy ? 'Aguarde um instante…' : recoveryRequired ? 'Salvar nova senha' : register ? 'Criar minha conta' : 'Entrar no meu espaço'}<ArrowRight size={18} aria-hidden="true" /></button>
+          {!register && !recoveryRequired && <button className="text-button" type="button" disabled={busy || !supabaseConfigured} onClick={recover}>Esqueci minha senha</button>}
         </form>
         {!recoveryRequired && <p className="auth-switch">{register ? 'Já tem uma conta?' : 'Ainda não tem uma conta?'} <Link to={register ? '/login' : '/register'}>{register ? 'Entrar' : 'Criar conta'}</Link></p>}
         <p className="privacy-note">Você escolhe suas preferências. Não é necessário informar diagnósticos.</p>
