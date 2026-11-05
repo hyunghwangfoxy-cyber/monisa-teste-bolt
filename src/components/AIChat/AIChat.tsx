@@ -28,7 +28,7 @@ export default function AIChat() {
 
   useEffect(() => {
     const prompt = (location.state as { prompt?: string } | null)?.prompt
-    if (prompt) { setDraft(prompt); window.history.replaceState({}, document.title) }
+    if (prompt) setDraft(prompt)
   }, [location.key])
 
   useEffect(() => {
