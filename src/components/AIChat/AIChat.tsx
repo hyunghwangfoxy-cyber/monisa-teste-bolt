@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { BookOpen, Send, Sparkles, MessageCircle, FileText, Plus, Trash2 } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useMonisa } from '../../context/MonisaContext'
 import { api, jsonRequest } from '../../lib/api'
 import type { ChatMessage } from '../../lib/preferences'
@@ -12,6 +12,7 @@ type ChatResponse = { messages: ChatMessage[]; conversations: Conversation[]; co
 
 export default function AIChat() {
   const { profile } = useMonisa()
+  const location = useLocation()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [conversationId, setConversationId] = useState<number | null>(null)
@@ -24,6 +25,11 @@ export default function AIChat() {
   const end = useRef<HTMLDivElement>(null)
   const input = useRef<HTMLTextAreaElement>(null)
   const pending = useRef(false)
+
+  useEffect(() => {
+    const prompt = (location.state as { prompt?: string } | null)?.prompt
+    if (prompt) { setDraft(prompt); window.history.replaceState({}, document.title) }
+  }, [location.key])
 
   useEffect(() => {
     const controller = new AbortController()
