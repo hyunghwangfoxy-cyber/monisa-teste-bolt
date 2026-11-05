@@ -1,4 +1,4 @@
-import type { Profile, ChatMessage } from './preferences'
+import type { Profile } from './preferences'
 import { defaultPreferences } from './preferences'
 import { supabase } from './supabase'
 
@@ -66,12 +66,6 @@ async function saveProfile(profile: Profile): Promise<Profile> {
   return fromRow(data as ProfileRow)
 }
 
-function readDemoMessages(): ChatMessage[] {
-  try {
-    const stored = localStorage.getItem('monisa-demo-messages')
-    return stored ? JSON.parse(stored) as ChatMessage[] : []
-  } catch { return [] }
-}
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const method = (options.method || 'GET').toUpperCase()
