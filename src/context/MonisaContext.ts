@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { User } from '@netlify/identity'
+import type { User } from '@supabase/supabase-js'
 import type { Profile } from '../lib/preferences'
 
 export interface MonisaState {
@@ -12,6 +12,7 @@ export interface MonisaState {
   finishRecovery: () => void
   refreshProfile: () => Promise<void>
   setProfile: (profile: Profile) => void
+  signOut: () => Promise<void>
 }
 
 export const MonisaContext = createContext<MonisaState | null>(null)
