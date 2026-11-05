@@ -1,32 +1,94 @@
 import type { Profile, ChatMessage } from './preferences'
+import { defaultPreferences } from './preferences'
+import { supabase } from './supabase'
 
-function readProfile(): Profile | null {
-  try {
-    const raw = localStorage.getItem('monisa-demo-profile')
-    return raw ? JSON.parse(raw) as Profile : null
-  } catch { return null }
+type ProfileRow = {
+  id: string
+  name: string
+  bio: string
+  subject: string
+  avatar_url: string | null
+  preferences: Profile['preferences']
+  learning_profile: Record<string, string> | null
 }
-function saveProfile(profile: Profile) {
-  localStorage.setItem('monisa-demo-profile', JSON.stringify(profile))
-  return profile
+
+function fromRow(row: ProfileRow): Profile {
+  return {
+    name: row.name,
+    bio: row.bio || '',
+    subject: row.subject || '',
+    avatarUrl: row.avatar_url,
+    preferences: row.preferences || defaultPreferences,
+    learningProfile: row.learning_profile,
+  }
+}
+
+async function currentUserId() {
+  const { data, error } = await supabase.auth.getUser()
+  if (error || !data.user) throw new Error('Sua sessão expirou. Entre novamente.')
+  return data.user.id
+}
+
+async function getProfile(): Promise<Profile> {
+  const id = await currentUserId()
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', id).maybeSingle()
+  if (error) throw new Error('Não foi possível carregar seu perfil. Verifique se a tabela profiles foi criada no Supabase.')
+  if (data) return fromRow(data as ProfileRow)
+
+  const { data: authData } = await supabase.auth.getUser()
+  const newProfile = {
+    id,
+    name: String(authData.user?.user_metadata?.full_name || authData.user?.email?.split('@')[0] || 'Estudante').slice(0, 80),
+    bio: '',
+    subject: '',
+    preferences: defaultPreferences,
+    learning_profile: null,
+  }
+  const { data: inserted, error: insertError } = await supabase.from('profiles').insert(newProfile).select('*').single()
+  if (insertError || !inserted) throw new Error('Não foi possível criar seu perfil. Confira a configuração da tabela no Supabase.')
+  return fromRow(inserted as ProfileRow)
+}
+
+async function saveProfile(profile: Profile): Promise<Profile> {
+  const id = await currentUserId()
+  const payload = {
+    id,
+    name: profile.name.trim().slice(0, 80) || 'Estudante',
+    bio: (profile.bio || '').slice(0, 300),
+    subject: (profile.subject || '').slice(0, 80),
+    avatar_url: profile.avatarUrl,
+    preferences: profile.preferences || defaultPreferences,
+    learning_profile: profile.learningProfile,
+    updated_at: new Date().toISOString(),
+  }
+  const { data, error } = await supabase.from('profiles').upsert(payload).select('*').single()
+  if (error || !data) throw new Error('Não foi possível salvar seu perfil. Tente novamente.')
+  return fromRow(data as ProfileRow)
+}
+
+function readDemoMessages(): ChatMessage[] {
+  try {
+    const stored = localStorage.getItem('monisa-demo-messages')
+    return stored ? JSON.parse(stored) as ChatMessage[] : []
+  } catch { return [] }
 }
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const method = (options.method || 'GET').toUpperCase()
-  const profile = readProfile()
+
   if (path.startsWith('/api/profile')) {
-    if (method === 'PUT') {
-      const updated = saveProfile(JSON.parse(String(options.body || '{}')) as Profile)
-      return updated as T
-    }
-    if (!profile) throw new Error('Digite seu nome para iniciar a demonstração.')
-    return profile as T
+    const result = method === 'PUT'
+      ? await saveProfile(JSON.parse(String(options.body || '{}')) as Profile)
+      : await getProfile()
+    return result as T
   }
+
   if (path.startsWith('/api/avatar')) {
-    if (!profile) throw new Error('Digite seu nome para iniciar a demonstração.')
+    const profile = await getProfile()
     let avatarUrl = profile.avatarUrl
     if (method === 'DELETE') avatarUrl = null
     else if (options.body instanceof Blob) {
+      if (options.body.size > 2 * 1024 * 1024) throw new Error('A imagem deve ter até 2 MB.')
       avatarUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader()
         reader.onload = () => resolve(String(reader.result || ''))
@@ -34,21 +96,21 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
         reader.readAsDataURL(options.body as Blob)
       })
     }
-    return saveProfile({ ...profile, avatarUrl }) as T
+    return await saveProfile({ ...profile, avatarUrl }) as T
   }
+
   if (path.startsWith('/api/chat')) {
-    const stored = localStorage.getItem('monisa-demo-messages')
-    let messages: ChatMessage[] = stored ? JSON.parse(stored) as ChatMessage[] : []
-    let conversationId = 1
+    let messages = readDemoMessages()
     if (method === 'POST') {
-      const body = JSON.parse(String(options.body || '{}')) as { message?: string; action?: string }
+      const body = JSON.parse(String(options.body || '{}')) as { message?: string }
       if (body.message) {
-        messages = [...messages, { id: Date.now(), role: 'user', content: body.message }, { id: Date.now() + 1, role: 'assistant', content: 'Estou no modo de demonstração, então a IA e as conversas conectadas ao servidor não estão disponíveis agora. Para sua apresentação, você ainda pode explorar o quiz, os jogos e as opções de acessibilidade.' }]
+        messages = [...messages, { id: Date.now(), role: 'user', content: body.message }, { id: Date.now() + 1, role: 'assistant', content: 'A área de conversas ainda está em modo de demonstração nesta versão.' }]
         localStorage.setItem('monisa-demo-messages', JSON.stringify(messages))
       }
     }
-    return { messages, conversations: [{ id: conversationId, title: 'Conversa de demonstração' }], conversationId } as T
+    return { messages, conversations: [{ id: 1, title: 'Conversa' }], conversationId: 1 } as T
   }
+
   const response = await fetch(path, { ...options, credentials: 'same-origin' })
   const data = await response.json().catch(() => null)
   if (!response.ok) throw new Error(data?.error || 'Não foi possível concluir. Tente novamente.')
