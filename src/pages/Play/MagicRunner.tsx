@@ -77,7 +77,7 @@ export default function MagicRunner(){
       const playerHeight=duck.current?22:43
       for(const item of obstacleData.current){
         const ox=item.x
-        const bottom=item.kind==='ground'?0:48
+        const bottom=item.kind==='ground'?0:35
         const height=item.kind==='ground'?34:23
         const hitX=ox<px+35&&ox+(item.kind==='air'?38:30)>px+5
         const hitY=y.current<bottom+height&&y.current+playerHeight>bottom
@@ -85,7 +85,7 @@ export default function MagicRunner(){
       }
       for(const item of obstacleData.current){
         const node=obstacleNodes.current.get(item.id)
-        if(node){node.style.transform=`translateX(${item.x-width}px)`;node.style.bottom=item.kind==='ground'?'24px':'72px'}
+        if(node){node.style.transform=`translateX(${item.x-width}px)`;node.style.bottom=item.kind==='ground'?'24px':'59px'}
       }
       if(player.current)player.current.style.transform=`translateY(-${y.current}px)`
       setObstacles(current=>current.length===obstacleData.current.length?current:obstacleData.current)
