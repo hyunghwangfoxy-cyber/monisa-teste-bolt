@@ -25,7 +25,9 @@ export default function StudySpace() {
   const storageKey = `monisa-study-notes-${user?.id || 'guest'}`
   const [notesHtml, setNotesHtml] = useState('')
   const [notesLoaded, setNotesLoaded] = useState(false)
+  const [wordCount, setWordCount] = useState(0)
   const editorRef = useRef<HTMLDivElement>(null)
+  const savedSelection = useRef<Range | null>(null)
   const [videoInput, setVideoInput] = useState('')
   const [videoQuery, setVideoQuery] = useState(profile?.subject || '')
   const [activeVideo, setActiveVideo] = useState('')
@@ -33,7 +35,11 @@ export default function StudySpace() {
   const [saved, setSaved] = useState(true)
 
   useEffect(() => {
-    try { setNotesHtml(localStorage.getItem(storageKey) || '') } catch { setNotesHtml('') }
+    let content = ''
+    try { content = localStorage.getItem(storageKey) || '' } catch { content = '' }
+    setNotesHtml(content)
+    if (editorRef.current) editorRef.current.innerHTML = content
+    setWordCount(content.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').trim().split(/\s+/).filter(Boolean).length)
     setNotesLoaded(true)
   }, [storageKey])
 
@@ -49,17 +55,38 @@ export default function StudySpace() {
     return () => window.clearTimeout(timeout)
   }, [notesHtml, storageKey, notesLoaded])
 
+  function rememberSelection() {
+    const selection = window.getSelection()
+    if (selection && selection.rangeCount && editorRef.current?.contains(selection.anchorNode)) {
+      savedSelection.current = selection.getRangeAt(0).cloneRange()
+    }
+  }
+
   function formatNote(command: string, value?: string) {
-    editorRef.current?.focus()
+    const editor = editorRef.current
+    if (!editor) return
+    editor.focus()
+    const selection = window.getSelection()
+    if (savedSelection.current && selection) {
+      selection.removeAllRanges()
+      selection.addRange(savedSelection.current)
+    }
     document.execCommand(command, false, value)
-    if (editorRef.current) setNotesHtml(editorRef.current.innerHTML)
+    rememberSelection()
+    setNotesHtml(editor.innerHTML)
+    setWordCount(editor.innerText.trim().split(/\s+/).filter(Boolean).length)
   }
 
   function changeFont(command: string, value: string) {
     formatNote(command, value)
   }
 
-  const noteText = editorRef.current?.innerText || ''
+  function handleNotesInput() {
+    const editor = editorRef.current
+    if (!editor) return
+    setNotesHtml(editor.innerHTML)
+    setWordCount(editor.innerText.trim().split(/\s+/).filter(Boolean).length)
+  }
 
   const tools = useMemo<Tool[]>(() => {
     const toolMap: Record<LayoutMode, Tool[]> = {
@@ -105,13 +132,13 @@ export default function StudySpace() {
       {tools.map(tool => tool === 'notes' ? <section className="study-tool-panel notes-panel" key={tool}>
         <header className="study-tool-header"><span className="study-tool-icon"><NotebookPen size={18} /></span><div><strong>Meu caderno</strong><small>Suas ideias, do seu jeito</small></div><span className="study-tool-status">Auto-save</span></header>
         <div className="notebook-toolbar" role="toolbar" aria-label="Formatação do caderno">
-          <select aria-label="Tipo de letra" defaultValue="Arial" onChange={event => changeFont('fontName', event.target.value)}>
+          <select aria-label="Tipo de letra" defaultValue="Arial" onMouseDown={rememberSelection} onChange={event => changeFont('fontName', event.target.value)}>
             <option value="Arial">Arial</option><option value="Georgia">Georgia</option><option value="Verdana">Verdana</option><option value="Trebuchet MS">Trebuchet</option><option value="Courier New">Monoespaçada</option>
           </select>
-          <select aria-label="Tamanho da letra" defaultValue="3" onChange={event => changeFont('fontSize', event.target.value)}>
+          <select aria-label="Tamanho da letra" defaultValue="3" onMouseDown={rememberSelection} onChange={event => changeFont('fontSize', event.target.value)}>
             <option value="2">Pequena</option><option value="3">Normal</option><option value="4">Grande</option><option value="5">Título</option>
           </select>
-          <button type="button" title="Negrito" aria-label="Negrito" onClick={() => formatNote('bold')}><Bold size={16}/></button>
+          <button type="button" title="Negrito" aria-label="Negrito" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('bold')}><Bold size={16}/></button>
           <button type="button" title="Itálico" aria-label="Itálico" onClick={() => formatNote('italic')}><Italic size={16}/></button>
           <button type="button" title="Sublinhado" aria-label="Sublinhado" onClick={() => formatNote('underline')}><Underline size={16}/></button>
           <label className="notebook-color" title="Cor do texto"><Palette size={16}/><input type="color" aria-label="Cor do texto" defaultValue="#26345a" onChange={event => formatNote('foreColor', event.target.value)}/></label>
@@ -125,9 +152,9 @@ export default function StudySpace() {
         <div className="notebook-paper">
           <div className="notebook-margin" aria-hidden="true"/>
           <label className="visually-hidden" htmlFor="monisa-study-notes">Escreva suas anotações</label>
-          <div id="monisa-study-notes" ref={editorRef} className="notebook-editor" contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" data-placeholder="Comece a escrever suas anotações aqui…\n\nOrganize suas ideias, destaque o que é importante e crie seu próprio resumo." onInput={event => setNotesHtml(event.currentTarget.innerHTML)} dangerouslySetInnerHTML={{ __html: notesHtml }} />
+          <div id="monisa-study-notes" ref={editorRef} className="notebook-editor" contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" data-placeholder="Comece a escrever suas anotações aqui…\n\nOrganize suas ideias, destaque o que é importante e crie seu próprio resumo." onInput={handleNotesInput} onKeyUp={rememberSelection} onMouseUp={rememberSelection} />
         </div>
-        <footer className="notes-footer"><span><FileText size={14} /> {noteText.trim() ? noteText.trim().split(/\s+/).length : 0} palavras</span><span>{saved ? 'Salvo neste dispositivo' : 'Salvando…'}</span></footer>
+        <footer className="notes-footer"><span><FileText size={14} /> {wordCount} palavras</span><span>{saved ? 'Salvo neste dispositivo' : 'Salvando…'}</span></footer>
       </section> : tool === 'video' ? <section className="study-tool-panel video-panel" key={tool}>
         <header className="study-tool-header"><span className="study-tool-icon youtube-icon"><Video size={19} /></span><div><strong>Vídeo educativo</strong><small>Aprenda assistindo</small></div></header>
         <form className="video-search-form" onSubmit={event => { event.preventDefault(); searchVideos() }}>
