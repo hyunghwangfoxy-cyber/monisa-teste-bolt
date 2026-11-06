@@ -190,3 +190,24 @@
 .runner-player-stick.ducking .stick-arm{animation:none}
 .runner-player-stick.ducking .stick-leg{animation:none}
 @media(prefers-reduced-motion:reduce){.runner-playing .runner-player-stick .stick-leg,.runner-playing .runner-player-stick .stick-arm{animation:none!important}}
+
+
+/* Corrida mais expressiva e efeitos de mudança de fase */
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-leg.leg-one{animation:runner-leg-a .16s ease-in-out infinite alternate}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-leg.leg-two{animation:runner-leg-b .16s ease-in-out infinite alternate}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-arm.arm-one{animation:runner-arm-a .16s ease-in-out infinite alternate}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-arm.arm-two{animation:runner-arm-b .16s ease-in-out infinite alternate}
+.runner-player-stick .stick-leg,.runner-player-stick .stick-arm{will-change:transform}
+.runner-stage-two.runner-playing{animation:runner-stage-glow 1.4s ease-out}
+.runner-stage-three{background:radial-gradient(ellipse at 50% 72%,#6256a0 0%,transparent 48%),linear-gradient(180deg,#10172f 0%,#202d58 68%,#171d3b 68%)}
+.runner-stage-three::before,.runner-stage-three::after{content:"";position:absolute;inset:0;pointer-events:none}
+.runner-stage-three::before{z-index:0;background-image:radial-gradient(circle,#fff6c9 1px,transparent 1.8px),radial-gradient(circle,#b9c8ff 1px,transparent 1.8px);background-size:47px 43px,71px 67px;background-position:8px 10px,29px 24px;animation:runner-stars-drift 8s linear infinite}
+.runner-stage-three::after{z-index:1;inset:auto 0 24px;height:48px;background:linear-gradient(90deg,transparent,#9d83ff55,transparent);filter:blur(12px);animation:runner-aurora 2.8s ease-in-out infinite alternate}
+.runner-stage-three.runner-playing{animation:runner-night-arrive 1.6s ease-out}
+.runner-stage-two.runner-playing::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 75% 22%,#fff6cf88,transparent 28%);animation:runner-phase-flash 1.2s ease-out forwards}
+@keyframes runner-stage-glow{0%{filter:brightness(1)}35%{filter:brightness(1.3) saturate(1.25)}100%{filter:brightness(1)}}
+@keyframes runner-night-arrive{0%{filter:brightness(1.8)}45%{filter:brightness(1.25)}100%{filter:brightness(1)}}
+@keyframes runner-stars-drift{from{background-position:8px 10px,29px 24px}to{background-position:55px 53px,100px 91px}}
+@keyframes runner-aurora{from{opacity:.25;transform:translateX(-8%)}to{opacity:.8;transform:translateX(8%)}}
+@keyframes runner-phase-flash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.runner-stage-two.runner-playing,.runner-stage-three.runner-playing,.runner-stage-three::before,.runner-stage-three::after,.runner-stage-two.runner-playing::after{animation:none!important}}
