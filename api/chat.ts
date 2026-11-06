@@ -128,35 +128,51 @@ export default async function handler(req: RequestLike, res: ResponseLike) {
 
   let answer = ''
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': geminiApiKey,
+    const requestBody = {
+      systemInstruction: { parts: [{ text: instructions }] },
+      contents,
+      generationConfig: {
+        maxOutputTokens: 1400,
       },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: instructions }] },
-        contents,
-        generationConfig: {
-          maxOutputTokens: 1400,
+    }
+    const primaryModel = process.env.GEMINI_MODEL || 'gemini-3.8-flash'
+    const modelsToTry = [primaryModel, ...(primaryModel === 'gemini-3.5-flash-lite' ? [] : ['gemini-3.5-flash-lite'])]
+
+    let lastStatus = 0
+    let lastDetail = ''
+    for (const model of modelsToTry) {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': geminiApiKey,
         },
-      }),
-      signal: AbortSignal.timeout(45000),
-    })
+        body: JSON.stringify(requestBody),
+        signal: AbortSignal.timeout(45000),
+      })
 
-    const result = await response.json().catch(() => null) as (GeminiResponse & { error?: { message?: string } }) | null
+      const result = await response.json().catch(() => null) as (GeminiResponse & { error?: { message?: string } }) | null
+      if (response.ok) {
+        answer = result?.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim() || ''
+        if (answer) break
+        return fail(res, 503, 'O Gemini não recebeu uma resposta válida. Tente novamente.')
+      }
 
-    if (response.status === 429) return fail(res, 503, 'O Gemini atingiu o limite temporário de solicitações. Aguarde um pouco e tente novamente.')
-    if (response.status === 401 || response.status === 403) return fail(res, 503, 'A chave do Gemini não foi aceita. Confira GEMINI_API_KEY nas variáveis de ambiente da Vercel.')
-    if (!response.ok) {
-      const detail = result?.error?.message
-      console.error('Gemini API error:', response.status, detail || 'Sem detalhes')
-      return fail(res, 503, detail
-        ? `Erro do Gemini (${response.status}): ${detail.slice(0, 220)}`
-        : `O Gemini retornou erro HTTP ${response.status}. Confira a configuração da API.`)
+      lastStatus = response.status
+      lastDetail = result?.error?.message || ''
+      console.error('Gemini API error:', model, response.status, lastDetail || 'Sem detalhes')
+
+      if (response.status === 429) return fail(res, 503, 'O Gemini atingiu o limite temporário de solicitações. Aguarde um pouco e tente novamente.')
+      if (response.status === 401 || response.status === 403) return fail(res, 503, 'A chave do Gemini não foi aceita. Confira GEMINI_API_KEY nas variáveis de ambiente da Vercel.')
+      if (response.status !== 503) {
+        return fail(res, 503, `Erro do Gemini (${response.status}): ${(lastDetail || 'Falha na solicitação.').slice(0, 180)}`)
+      }
+      // Se o modelo principal estiver indisponível por alta demanda, tenta o Flash-Lite estável.
     }
 
-    answer = result?.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim() || ''
+    return fail(res, 503, lastDetail
+      ? `Os modelos Gemini estão temporariamente indisponíveis (HTTP ${lastStatus}): ${lastDetail.slice(0, 160)}`
+      : 'Os modelos Gemini estão temporariamente indisponíveis. Tente novamente em instantes.')
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error)
     console.error('Gemini connection error:', detail)
