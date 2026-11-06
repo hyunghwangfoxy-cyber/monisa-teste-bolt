@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Bot, ExternalLink, FileText, LayoutGrid, NotebookPen, Search, Sparkles, Video } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Bold, Bot, ExternalLink, FileText, Highlighter, Italic, LayoutGrid, List, ListOrdered, NotebookPen, Palette, Redo2, Search, Sparkles, Underline, Undo2, Video } from 'lucide-react'
 import AIChat from '../../components/AIChat/AIChat'
 import { useMonisa } from '../../context/MonisaContext'
 import './StudySpace.css'
@@ -23,7 +23,9 @@ function videoId(value: string) {
 export default function StudySpace() {
   const { user, profile } = useMonisa()
   const storageKey = `monisa-study-notes-${user?.id || 'guest'}`
-  const [notes, setNotes] = useState('')
+  const [notesHtml, setNotesHtml] = useState('')
+  const [notesLoaded, setNotesLoaded] = useState(false)
+  const editorRef = useRef<HTMLDivElement>(null)
   const [videoInput, setVideoInput] = useState('')
   const [videoQuery, setVideoQuery] = useState(profile?.subject || '')
   const [activeVideo, setActiveVideo] = useState('')
@@ -31,19 +33,33 @@ export default function StudySpace() {
   const [saved, setSaved] = useState(true)
 
   useEffect(() => {
-    try { setNotes(localStorage.getItem(storageKey) || '') } catch { setNotes('') }
+    try { setNotesHtml(localStorage.getItem(storageKey) || '') } catch { setNotesHtml('') }
+    setNotesLoaded(true)
   }, [storageKey])
 
   useEffect(() => {
+    if (!notesLoaded) return
     setSaved(false)
     const timeout = window.setTimeout(() => {
       try {
-        localStorage.setItem(storageKey, notes)
+        localStorage.setItem(storageKey, notesHtml)
         setSaved(true)
       } catch { setSaved(false) }
     }, 350)
     return () => window.clearTimeout(timeout)
-  }, [notes, storageKey])
+  }, [notesHtml, storageKey, notesLoaded])
+
+  function formatNote(command: string, value?: string) {
+    editorRef.current?.focus()
+    document.execCommand(command, false, value)
+    if (editorRef.current) setNotesHtml(editorRef.current.innerHTML)
+  }
+
+  function changeFont(command: string, value: string) {
+    formatNote(command, value)
+  }
+
+  const noteText = editorRef.current?.innerText || ''
 
   const tools = useMemo<Tool[]>(() => {
     const toolMap: Record<LayoutMode, Tool[]> = {
@@ -88,9 +104,30 @@ export default function StudySpace() {
     <div className={`study-workspace-grid panels-${tools.length}`}>
       {tools.map(tool => tool === 'notes' ? <section className="study-tool-panel notes-panel" key={tool}>
         <header className="study-tool-header"><span className="study-tool-icon"><NotebookPen size={18} /></span><div><strong>Meu caderno</strong><small>Suas ideias, do seu jeito</small></div><span className="study-tool-status">Auto-save</span></header>
-        <label className="visually-hidden" htmlFor="monisa-study-notes">Escreva suas anotações</label>
-        <textarea id="monisa-study-notes" value={notes} onChange={event => setNotes(event.target.value)} placeholder="Comece a escrever suas anotações aqui…&#10;&#10;Você pode registrar ideias, resumos, perguntas e exemplos." />
-        <footer className="notes-footer"><span><FileText size={14} /> {notes.trim() ? notes.trim().split(/\s+/).length : 0} palavras</span><span>Salvo neste dispositivo</span></footer>
+        <div className="notebook-toolbar" role="toolbar" aria-label="Formatação do caderno">
+          <select aria-label="Tipo de letra" defaultValue="Arial" onChange={event => changeFont('fontName', event.target.value)}>
+            <option value="Arial">Arial</option><option value="Georgia">Georgia</option><option value="Verdana">Verdana</option><option value="Trebuchet MS">Trebuchet</option><option value="Courier New">Monoespaçada</option>
+          </select>
+          <select aria-label="Tamanho da letra" defaultValue="3" onChange={event => changeFont('fontSize', event.target.value)}>
+            <option value="2">Pequena</option><option value="3">Normal</option><option value="4">Grande</option><option value="5">Título</option>
+          </select>
+          <button type="button" title="Negrito" aria-label="Negrito" onClick={() => formatNote('bold')}><Bold size={16}/></button>
+          <button type="button" title="Itálico" aria-label="Itálico" onClick={() => formatNote('italic')}><Italic size={16}/></button>
+          <button type="button" title="Sublinhado" aria-label="Sublinhado" onClick={() => formatNote('underline')}><Underline size={16}/></button>
+          <label className="notebook-color" title="Cor do texto"><Palette size={16}/><input type="color" aria-label="Cor do texto" defaultValue="#26345a" onChange={event => formatNote('foreColor', event.target.value)}/></label>
+          <label className="notebook-color highlight-control" title="Marca-texto"><Highlighter size={16}/><input type="color" aria-label="Cor do marca-texto" defaultValue="#fff09a" onChange={event => formatNote('hiliteColor', event.target.value)}/></label>
+          <button type="button" title="Lista com marcadores" aria-label="Lista com marcadores" onClick={() => formatNote('insertUnorderedList')}><List size={16}/></button>
+          <button type="button" title="Lista numerada" aria-label="Lista numerada" onClick={() => formatNote('insertOrderedList')}><ListOrdered size={16}/></button>
+          <span className="notebook-toolbar-spacer"/>
+          <button type="button" title="Desfazer" aria-label="Desfazer" onClick={() => formatNote('undo')}><Undo2 size={16}/></button>
+          <button type="button" title="Refazer" aria-label="Refazer" onClick={() => formatNote('redo')}><Redo2 size={16}/></button>
+        </div>
+        <div className="notebook-paper">
+          <div className="notebook-margin" aria-hidden="true"/>
+          <label className="visually-hidden" htmlFor="monisa-study-notes">Escreva suas anotações</label>
+          <div id="monisa-study-notes" ref={editorRef} className="notebook-editor" contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" data-placeholder="Comece a escrever suas anotações aqui…\n\nOrganize suas ideias, destaque o que é importante e crie seu próprio resumo." onInput={event => setNotesHtml(event.currentTarget.innerHTML)} dangerouslySetInnerHTML={{ __html: notesHtml }} />
+        </div>
+        <footer className="notes-footer"><span><FileText size={14} /> {noteText.trim() ? noteText.trim().split(/\s+/).length : 0} palavras</span><span>{saved ? 'Salvo neste dispositivo' : 'Salvando…'}</span></footer>
       </section> : tool === 'video' ? <section className="study-tool-panel video-panel" key={tool}>
         <header className="study-tool-header"><span className="study-tool-icon youtube-icon"><Video size={19} /></span><div><strong>Vídeo educativo</strong><small>Aprenda assistindo</small></div></header>
         <form className="video-search-form" onSubmit={event => { event.preventDefault(); searchVideos() }}>
