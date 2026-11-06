@@ -139,18 +139,24 @@ export default async function handler(req: RequestLike, res: ResponseLike) {
         contents,
         generationConfig: {
           maxOutputTokens: 1400,
-          temperature: 0.7,
         },
       }),
       signal: AbortSignal.timeout(45000),
     })
 
+    const result = await response.json().catch(() => null) as (GeminiResponse & { error?: { message?: string } }) | null
+
     if (response.status === 429) return fail(res, 503, 'O Gemini atingiu o limite temporário de solicitações. Aguarde um pouco e tente novamente.')
     if (response.status === 401 || response.status === 403) return fail(res, 503, 'A chave do Gemini não foi aceita. Confira GEMINI_API_KEY nas variáveis de ambiente da Vercel.')
-    if (!response.ok) return fail(res, 503, 'O Gemini não conseguiu responder agora. Confira o modelo e tente novamente.')
+    if (!response.ok) {
+      const detail = result?.error?.message
+      console.error('Gemini API error:', response.status, detail || 'Sem detalhes')
+      return fail(res, 503, detail
+        ? `Erro do Gemini (${response.status}): ${detail.slice(0, 220)}`
+        : `O Gemini retornou erro HTTP ${response.status}. Confira a configuração da API.`)
+    }
 
-    const result = await response.json() as GeminiResponse
-    answer = result.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim() || ''
+    answer = result?.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim() || ''
   } catch {
     return fail(res, 503, 'A Monisa não conseguiu se conectar ao Gemini agora. Tente novamente em instantes.')
   }
