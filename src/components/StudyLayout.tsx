@@ -3,6 +3,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { Menu, Heart } from 'lucide-react'
 import { useMonisa } from '../context/MonisaContext'
 import Sidebar from './Sidebar/Sidebar'
+import '../styles/monisa-polish.css'
 
 export default function StudyLayout() {
   const { user, loading, profile, profileLoading, error, refreshProfile } = useMonisa()
