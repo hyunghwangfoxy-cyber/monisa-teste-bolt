@@ -16,7 +16,6 @@ export default function MagicRunner(){
   const [stage,setStage]=useState(0)
  const [ducking,setDucking]=useState(false)
   const [jumping,setJumping]=useState(false)
-  const [ducking,setDucking]=useState(false)
   const [obstacles,setObstacles]=useState<Obstacle[]>([])
   const world=useRef<HTMLDivElement>(null)
   const player=useRef<HTMLDivElement>(null)
