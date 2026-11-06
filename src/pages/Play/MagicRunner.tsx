@@ -14,6 +14,7 @@ export default function MagicRunner(){
   const [score,setScore]=useState(0)
   const [best,setBest]=useState(()=>{try{return Number(localStorage.getItem(BEST_KEY))||0}catch{return 0}})
   const [stage,setStage]=useState(0)
+ const [ducking,setDucking]=useState(false)
   const [jumping,setJumping]=useState(false)
   const [ducking,setDucking]=useState(false)
   const [obstacles,setObstacles]=useState<Obstacle[]>([])
