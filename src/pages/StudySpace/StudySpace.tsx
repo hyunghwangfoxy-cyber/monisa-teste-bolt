@@ -141,8 +141,8 @@ export default function StudySpace() {
           <button type="button" title="Negrito" aria-label="Negrito" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('bold')}><Bold size={16}/></button>
           <button type="button" title="Itálico" aria-label="Itálico" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('italic')}><Italic size={16}/></button>
           <button type="button" title="Sublinhado" aria-label="Sublinhado" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('underline')}><Underline size={16}/></button>
-          <label className="notebook-color" title="Cor do texto"><Palette size={16}/><input type="color" aria-label="Cor do texto" defaultValue="#26345a" onChange={event => formatNote('foreColor', event.target.value)}/></label>
-          <label className="notebook-color highlight-control" title="Marca-texto"><Highlighter size={16}/><input type="color" aria-label="Cor do marca-texto" defaultValue="#fff09a" onChange={event => formatNote('hiliteColor', event.target.value)}/></label>
+          <label className="notebook-color" title="Cor do texto"><Palette size={16}/><input type="color" aria-label="Cor do texto" defaultValue="#a78bfa" onMouseDown={rememberSelection} onChange={event => formatNote('foreColor', event.target.value)}/></label>
+          <label className="notebook-color highlight-control" title="Marca-texto"><Highlighter size={16}/><input type="color" aria-label="Cor do marca-texto" defaultValue="#f5d66e" onMouseDown={rememberSelection} onChange={event => formatNote('hiliteColor', event.target.value)}/></label>
           <button type="button" title="Lista com marcadores" aria-label="Lista com marcadores" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('insertUnorderedList')}><List size={16}/></button>
           <button type="button" title="Lista numerada" aria-label="Lista numerada" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('insertOrderedList')}><ListOrdered size={16}/></button>
           <span className="notebook-toolbar-spacer"/>
