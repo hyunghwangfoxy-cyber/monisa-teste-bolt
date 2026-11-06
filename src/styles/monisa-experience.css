@@ -1,0 +1,201 @@
+/* Monisa Experience Refresh — identidade visual das áreas internas.
+   Camada exclusivamente visual: não altera componentes, dados ou fluxos. */
+.study-app {
+  --experience-line: color-mix(in srgb, var(--text) 9%, transparent);
+  --experience-shadow: 0 24px 60px rgba(8, 12, 28, .12);
+}
+.study-app .study-content { max-width: 1720px; }
+.study-app .study-sidebar {
+  background: color-mix(in srgb, var(--page) 94%, var(--panel));
+  box-shadow: 12px 0 44px rgba(5, 8, 22, .10);
+}
+.study-app .study-sidebar .brand { margin-bottom: 8px; }
+.study-app .study-sidebar nav a { font-weight: 600; letter-spacing: -.01em; }
+.study-app .study-sidebar nav a.active { box-shadow: inset 3px 0 0 var(--accent); }
+.study-app .study-header { border-bottom: 1px solid var(--experience-line); }
+.study-app .study-content > section { animation: monisa-enter .42s cubic-bezier(.2,.75,.25,1) both; }
+@keyframes monisa-enter { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Tipografia e cabeçalhos: hierarquia editorial, sem molduras desnecessárias. */
+.study-app .eyebrow { letter-spacing: .17em; font-size: .66rem; }
+.study-app .page-heading h1,
+.study-app .chat-heading h1,
+.study-app .play-heading h1,
+.study-app .study-space-heading h1 { font-weight: 780; letter-spacing: -.06em; }
+.study-app .page-heading p,
+.study-app .chat-heading p,
+.study-app .play-heading p { max-width: 680px; }
+
+/* Chat: área de conversa ampla e limpa. */
+.study-app .chat-page { max-width: 1360px; }
+.study-app .chat-heading { padding: 10px 0 8px; }
+.study-app .chat-history { background: transparent; }
+.study-app .chat-history-heading { padding-bottom: 10px; }
+.study-app .chat-history-list { gap: 8px; }
+.study-app .chat-history-item { max-width: 260px; }
+.study-app .conversation { min-height: 210px; }
+.study-app .chat-empty { padding: 26px; }
+.study-app .chat-message { max-width: 88%; padding: 20px 22px; }
+.study-app .chat-compose { margin-top: 14px; }
+.study-app .chat-compose textarea { min-height: 90px; }
+
+/* Perfil e configurações: painéis com ritmo e respiro, sem cartões empilhados em excesso. */
+.study-app .personal-page { max-width: 1240px; }
+.study-app .profile-grid { gap: 26px; align-items: start; }
+.study-app .photo-card { text-align: center; }
+.study-app .photo-card .profile-photo { margin: 0 auto 18px; }
+.study-app .stack-form { gap: 22px; }
+.study-app .stack-form > label { gap: 9px; }
+.study-app .settings-form { max-width: 1120px; }
+.study-app .settings-card { padding: clamp(24px, 3.5vw, 38px); }
+.study-app .settings-card legend { padding: 0 10px; font-size: 1rem; }
+.study-app .settings-fields { gap: 22px; }
+.study-app .toggle-row { padding-block: 17px; }
+.study-app .save-preferences { border-top: 1px solid var(--experience-line); padding-top: 22px; }
+
+/* Descobrir: cartões de conteúdo mais editoriais, com imagens em destaque. */
+.study-app .discover-page { max-width: 1360px; }
+.study-app .discover-section { margin-top: 48px; }
+.study-app .discover-section-heading { margin-bottom: 22px; }
+.study-app .news-grid, .study-app .learning-grid { gap: 22px; }
+.study-app .news-card { grid-template-columns: minmax(155px, 34%) minmax(0, 1fr); border-radius: 22px; }
+.study-app .news-card > img, .study-app .news-image-placeholder { width: 100%; min-height: 220px; }
+.study-app .news-card-content { padding: 22px; }
+.study-app .news-card h3 { font-size: 1.02rem; line-height: 1.42; }
+.study-app .learning-card { padding: 26px; border-radius: 22px; }
+.study-app .discover-categories { gap: 10px; }
+
+/* Monisa Play: palco de jogo, com navegação discreta. */
+.study-app .play-page { max-width: 1360px; }
+.study-app .game-picker { display: flex; flex-wrap: wrap; gap: 7px; }
+.study-app .game-picker button { padding: 11px 14px; }
+.study-app .mini-game-card { padding: clamp(22px, 3vw, 36px); }
+.study-app .play-stats { gap: 14px; }
+.study-app .play-stats > div { padding: 18px 20px; }
+
+/* Espaço de Estudos: a referência verde é aplicada somente ao caderno.
+   O vídeo e a tutora mantêm identidades próprias dentro do mesmo workspace. */
+.study-app .study-space-page { max-width: 1540px; }
+.study-app .study-space-heading { margin-bottom: 30px; }
+.study-app .study-space-toolbar {
+  padding: 16px 19px;
+  border-radius: 17px;
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+}
+.study-app .study-layout-options button { min-height: 40px; }
+.study-app .study-workspace-grid { gap: 22px; }
+.study-app .study-tool-panel {
+  border: 0;
+  border-radius: 23px;
+  overflow: hidden;
+  box-shadow: var(--experience-shadow);
+}
+.study-app .notes-panel {
+  position: relative;
+  background: #e6eee2;
+  color: #263d35;
+  box-shadow: 0 24px 58px rgba(28, 56, 43, .18);
+}
+.study-app .notes-panel::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0; bottom: 0; left: 0;
+  width: 13px;
+  background: linear-gradient(90deg, #355d4d, #789681 58%, #a9bda9);
+  box-shadow: 3px 0 9px rgba(26, 54, 43, .12);
+}
+.study-app .notes-panel .study-tool-header {
+  position: relative;
+  z-index: 1;
+  min-height: 104px;
+  height: auto;
+  padding: 19px 25px 18px 34px;
+  border: 0;
+  background:
+    radial-gradient(circle at 88% 48%, rgba(17, 38, 31, .9) 0 18px, rgba(35, 67, 54, .7) 19px 27px, transparent 28px),
+    radial-gradient(circle at 88% 48%, rgba(232, 240, 220, .25) 0 38px, transparent 39px),
+    linear-gradient(112deg, #365c4c, #557b65 58%, #78927b);
+  color: #f4f1df;
+}
+.study-app .notes-panel .study-tool-header::after {
+  content: "STUDY JOURNAL  ·  YOUR NOTES";
+  position: absolute;
+  left: 82px;
+  bottom: 15px;
+  color: rgba(246, 244, 224, .7);
+  font-size: 8px;
+  letter-spacing: .2em;
+  font-weight: 800;
+}
+.study-app .notes-panel .study-tool-header strong { color: #fff9e9; font-family: Georgia, serif; font-size: 1.22rem; letter-spacing: .015em; }
+.study-app .notes-panel .study-tool-header small { color: rgba(250, 247, 230, .78); }
+.study-app .notes-panel .study-tool-icon { width: 39px; height: 39px; border-radius: 50%; color: #e8eedb; background: rgba(255,255,255,.13); }
+.study-app .notes-panel .study-tool-status { color: #e3ead5; margin-left: auto; align-self: flex-start; }
+.study-app .notes-panel .notebook-toolbar {
+  position: relative;
+  z-index: 1;
+  padding: 11px 18px 11px 30px;
+  border: 0;
+  background: #dce7d9;
+}
+.study-app .notes-panel .notebook-toolbar button,
+.study-app .notes-panel .notebook-toolbar select,
+.study-app .notes-panel .notebook-color {
+  border: 1px solid rgba(64, 94, 75, .12);
+  border-radius: 9px;
+  background: #f7f7ed;
+  color: #385346;
+}
+.study-app .notes-panel .notebook-toolbar button:hover,
+.study-app .notes-panel .notebook-toolbar select:hover,
+.study-app .notes-panel .notebook-color:hover { background: #e8efe3; border-color: #789681; }
+.study-app .notes-panel .notebook-paper {
+  min-height: 500px;
+  margin: 0 15px 0 22px;
+  padding: 30px 30px 38px 62px;
+  border-radius: 3px 3px 12px 3px;
+  background-color: #fffef7;
+  background-image: linear-gradient(to bottom, transparent 31px, #d9e4dc 32px);
+  background-size: 100% 32px;
+  box-shadow: 0 4px 18px rgba(38, 61, 53, .08);
+}
+.study-app .notes-panel .notebook-margin { left: 43px; background: #e5b8b4; }
+.study-app .notes-panel .notebook-editor {
+  min-height: 440px;
+  color: #31483d;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  line-height: 32px;
+  caret-color: #52745e;
+}
+.study-app .notes-panel .notebook-editor:empty::before { color: #9ba99c; }
+.study-app .notes-panel .notes-footer {
+  padding: 14px 22px 14px 32px;
+  border: 0;
+  color: #5f7666;
+  background: #e6eee2;
+}
+.study-app .video-panel {
+  background: color-mix(in srgb, var(--panel) 96%, #d8e5f2);
+}
+.study-app .video-panel .study-tool-header { background: color-mix(in srgb, #dce9f7 12%, var(--panel)); }
+.study-app .ai-panel { background: color-mix(in srgb, var(--panel) 96%, #8b79c8); }
+.study-app .study-space-tip { margin-top: 23px; padding: 16px 2px; background: transparent; border-top: 1px solid var(--experience-line); border-radius: 0; }
+
+:root[data-theme='contrast'] .study-app .notes-panel,
+:root[data-theme='contrast'] .study-app .notes-panel .notebook-paper { outline: 2px solid #fff; }
+@media (max-width: 1050px) {
+  .study-app .news-card { grid-template-columns: 135px minmax(0,1fr); }
+  .study-app .news-card > img, .study-app .news-image-placeholder { min-height: 200px; }
+}
+@media (max-width: 760px) {
+  .study-app .news-card { grid-template-columns: 1fr; }
+  .study-app .news-card > img, .study-app .news-image-placeholder { height: 175px; min-height: 175px; }
+  .study-app .notes-panel .notebook-paper { margin-inline: 10px; padding-left: 48px; }
+  .study-app .notes-panel .notebook-margin { left: 32px; }
+  .study-app .notes-panel .study-tool-header { padding-left: 25px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .study-app .study-content > section { animation: none; }
+}
