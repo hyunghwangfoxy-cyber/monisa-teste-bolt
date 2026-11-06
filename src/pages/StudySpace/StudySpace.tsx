@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Bot, BookOpen, ExternalLink, FileText, LayoutGrid, NotebookPen, Search, Sparkles, Youtube } from 'lucide-react'
+import { Bot, ExternalLink, FileText, LayoutGrid, NotebookPen, Search, Sparkles, Video } from 'lucide-react'
 import AIChat from '../../components/AIChat/AIChat'
 import { useMonisa } from '../../context/MonisaContext'
 import './StudySpace.css'
@@ -45,12 +45,15 @@ export default function StudySpace() {
     return () => window.clearTimeout(timeout)
   }, [notes, storageKey])
 
-  const tools = useMemo<Tool[]>(() => ({
-    'notes-ai': ['notes', 'ai'],
-    'video-notes': ['video', 'notes'],
-    'video-ai': ['video', 'ai'],
-    all: ['video', 'notes', 'ai'],
-  }[layout]), [layout])
+  const tools = useMemo<Tool[]>(() => {
+    const toolMap: Record<LayoutMode, Tool[]> = {
+      'notes-ai': ['notes', 'ai'],
+      'video-notes': ['video', 'notes'],
+      'video-ai': ['video', 'ai'],
+      all: ['video', 'notes', 'ai'],
+    }
+    return toolMap[layout]
+  }, [layout])
 
   function openVideo() {
     const id = videoId(videoInput.trim())
@@ -89,7 +92,7 @@ export default function StudySpace() {
         <textarea id="monisa-study-notes" value={notes} onChange={event => setNotes(event.target.value)} placeholder="Comece a escrever suas anotações aqui…&#10;&#10;Você pode registrar ideias, resumos, perguntas e exemplos." />
         <footer className="notes-footer"><span><FileText size={14} /> {notes.trim() ? notes.trim().split(/\s+/).length : 0} palavras</span><span>Salvo neste dispositivo</span></footer>
       </section> : tool === 'video' ? <section className="study-tool-panel video-panel" key={tool}>
-        <header className="study-tool-header"><span className="study-tool-icon youtube-icon"><Youtube size={19} /></span><div><strong>Vídeo educativo</strong><small>Aprenda assistindo</small></div></header>
+        <header className="study-tool-header"><span className="study-tool-icon youtube-icon"><Video size={19} /></span><div><strong>Vídeo educativo</strong><small>Aprenda assistindo</small></div></header>
         <form className="video-search-form" onSubmit={event => { event.preventDefault(); searchVideos() }}>
           <label className="visually-hidden" htmlFor="video-topic">Assunto que deseja aprender</label>
           <input id="video-topic" value={videoQuery} onChange={event => setVideoQuery(event.target.value)} placeholder="O que você quer aprender?" />
@@ -100,7 +103,7 @@ export default function StudySpace() {
           <div><input id="youtube-url" value={videoInput} onChange={event => setVideoInput(event.target.value)} placeholder="https://youtube.com/watch?v=…" /><button type="submit">Abrir aula</button></div>
         </form>
         <div className="video-player-wrap">
-          {activeVideo ? <iframe src={`https://www.youtube-nocookie.com/embed/${activeVideo}`} title="Vídeo educativo do YouTube" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /> : <div className="video-empty"><span><Youtube size={34} /></span><strong>Sua próxima aula começa aqui</strong><p>Pesquise um assunto no YouTube ou cole o link de um vídeo para assistir nesta área.</p><button type="button" onClick={searchVideos} disabled={!videoQuery.trim()}><Search size={15} /> Buscar aulas</button></div>}
+          {activeVideo ? <iframe src={`https://www.youtube-nocookie.com/embed/${activeVideo}`} title="Vídeo educativo do YouTube" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /> : <div className="video-empty"><span><Video size={34} /></span><strong>Sua próxima aula começa aqui</strong><p>Pesquise um assunto no YouTube ou cole o link de um vídeo para assistir nesta área.</p><button type="button" onClick={searchVideos} disabled={!videoQuery.trim()}><Search size={15} /> Buscar aulas</button></div>}
         </div>
         <p className="video-note"><ExternalLink size={13} /> Os vídeos são fornecidos pelo YouTube. A busca abre os resultados em uma nova aba.</p>
       </section> : <section className="study-tool-panel ai-panel" key={tool}>
