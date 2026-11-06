@@ -52,7 +52,7 @@ export default function ColorBlock() {
     <p>Escolha uma peça e encaixe no tabuleiro. Complete linhas ou colunas para abrir espaço e somar pontos.</p>
     <div className="color-block-stats"><span>Pontos <strong>{score}</strong></span><span><Trophy size={15}/> Recorde <strong>{best}</strong></span></div>
     <div className="color-block-board" role="group" aria-label="Tabuleiro Color Block">
-      {board.map((line,row)=>line.map((cell,col)=><button key={row+'-'+col} type="button" className="color-block-cell" style={{'--cell-color':cell||'transparent'} as React.CSSProperties} onClick={()=>place(row,col)} aria-label={cell?'Casa ocupada':'Casa vazia'} disabled={finished || !selected}/ >))}
+      {board.map((line,row)=>line.map((cell,col)=><button key={row+'-'+col} type="button" className="color-block-cell" style={{'--cell-color':cell||'transparent'} as React.CSSProperties} onClick={()=>place(row,col)} aria-label={cell?'Casa ocupada':'Casa vazia'} disabled={finished || selected === null}/ >))}
     </div>
     <div className="color-block-tray" aria-label="Peças disponíveis">
       {tray.map(shape=><button type="button" key={shape.id} className={`color-block-piece${selected===shape.id?' selected':''}`} onClick={()=>setSelected(shape.id)} aria-pressed={selected===shape.id}>
