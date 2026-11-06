@@ -1,168 +1,250 @@
-/* Monisa — visual direction: editorial, premium, calm and consistent.
-   Apenas apresentação: preserva componentes, funcionalidades, dados e rotas. */
+/* Monisa — Soft Editorial Luxury
+   Redesign visual das áreas internas. Não altera rotas, dados ou funcionalidades.
+   Cores e superfícies acompanham os temas escolhidos nas configurações. */
 .study-app {
-  --experience-line: color-mix(in srgb, var(--text) 9%, transparent);
-  --experience-shadow: 0 22px 58px rgba(8, 12, 28, .11);
+  --experience-line: color-mix(in srgb, var(--muted) 15%, transparent);
+  --experience-shadow: 0 18px 48px rgba(16, 13, 35, .075);
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 82% 0%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 38%),
+    var(--page);
 }
-.study-app .study-content { max-width: 1680px; padding: clamp(30px,4vw,58px) clamp(24px,4.5vw,72px) 72px; }
 .study-app .study-sidebar {
-  background: color-mix(in srgb, var(--page) 96%, var(--panel));
+  width: 252px;
+  padding: 27px 18px 20px;
+  background: color-mix(in srgb, var(--panel) 94%, transparent);
   border: 0;
-  box-shadow: 12px 0 44px rgba(5,8,22,.08);
+  box-shadow: 12px 0 42px rgba(16, 13, 35, .055);
 }
-.study-app .study-sidebar .brand { padding: 8px 12px 24px; }
+.study-app .study-sidebar .brand { padding: 5px 10px 20px; }
+.study-app .sidebar-caption { margin: 28px 11px 12px; letter-spacing: .15em; }
 .study-app .study-sidebar nav { gap: 5px; }
 .study-app .study-sidebar nav a {
-  min-height: 46px; padding: 12px 14px; border: 0; border-radius: 13px;
-  font-weight: 600; letter-spacing: -.015em; transition: background .2s ease, transform .2s ease;
+  min-height: 45px; padding: 11px 13px; border: 0; border-radius: 12px;
+  transition: background .2s ease, color .2s ease, transform .2s ease;
 }
 .study-app .study-sidebar nav a:hover { transform: translateX(2px); background: var(--panel-soft); }
 .study-app .study-sidebar nav a.active {
-  background: color-mix(in srgb, var(--accent) 13%, var(--panel));
-  box-shadow: inset 2px 0 0 var(--accent);
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 15%, var(--panel-soft));
+  box-shadow: inset 3px 0 0 var(--accent);
 }
-.study-app .sidebar-caption { margin: 29px 12px 11px; letter-spacing: .16em; }
+.study-app .sidebar-note {
+  margin: 24px 5px 0; padding: 14px 13px; border: 0;
+  border-left: 2px solid var(--accent); border-radius: 0 12px 12px 0;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+.study-app .sidebar-account { border-top: 1px solid var(--experience-line); }
+.study-app .signout-button { border-color: transparent; background: transparent; }
+.study-app .signout-button:hover { background: var(--panel-soft); }
+.study-app .study-main { min-width: 0; }
 .study-app .study-header {
-  height: 74px; padding-inline: clamp(24px,4vw,62px); border: 0;
-  border-bottom: 1px solid var(--experience-line);
-  background: color-mix(in srgb, var(--page) 88%, transparent); backdrop-filter: blur(18px);
+  height: 72px; padding-inline: clamp(22px, 4vw, 58px); border: 0;
+  background: color-mix(in srgb, var(--page) 86%, transparent);
+  backdrop-filter: blur(18px);
 }
-.study-app .study-content > section { animation: monisa-editorial-in .36s ease both; }
-@keyframes monisa-editorial-in { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Sistema tipográfico e superfícies compartilhado por todas as páginas. */
-.study-app .page-heading, .study-app .chat-heading, .study-app .play-heading,
-.study-app .study-space-heading { margin-bottom: 34px; }
-.study-app .page-heading h1, .study-app .chat-heading h1,
-.study-app .play-heading h1, .study-app .study-space-heading h1 {
-  font-weight: 760; letter-spacing: -.055em; line-height: 1.08;
+.study-app .header-note { padding: 8px 12px; border: 0; background: color-mix(in srgb, var(--panel) 72%, transparent); }
+.study-app .study-content { max-width: 1660px; padding: clamp(28px, 4vw, 54px) clamp(22px, 4.2vw, 66px) 64px; }
+.study-app .chat-page, .study-app .personal-page, .study-app .play-page,
+.study-app .discover-page, .study-app .study-space-page { max-width: 1320px; }
+.study-app .chat-heading, .study-app .page-heading, .study-app .play-heading,
+.study-app .study-space-heading { margin-bottom: 30px; }
+.study-app .chat-heading h1, .study-app .page-heading h1, .study-app .play-heading h1,
+.study-app .study-space-heading h1 {
+  font-weight: 760; letter-spacing: -.055em; line-height: 1.1;
 }
-.study-app .page-heading p, .study-app .chat-heading p, .study-app .play-heading p,
-.study-app .study-space-heading p { max-width: 700px; line-height: 1.8; }
-.study-app .eyebrow { letter-spacing: .17em; font-size: .66rem; }
-.study-app .primary-button, .study-app .secondary-button, .study-app .danger-button,
-.study-app .icon-button { border-radius: 12px; transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
-.study-app .primary-button { box-shadow: 0 8px 22px color-mix(in srgb, var(--button) 20%, transparent); }
-.study-app .primary-button:hover:not(:disabled) { transform: translateY(-1px); }
-.study-app .secondary-button, .study-app .icon-button { border-color: transparent; background: var(--panel-soft); }
-.study-app .settings-card, .study-app .news-card, .study-app .learning-card,
-.study-app .mini-game-card, .study-app .study-tool-panel, .study-app .chat-empty,
-.study-app .chat-message {
-  border: 0; box-shadow: var(--experience-shadow);
+.study-app .chat-heading p, .study-app .page-heading p, .study-app .play-heading p,
+.study-app .study-space-heading p { line-height: 1.8; }
+.study-app .eyebrow { letter-spacing: .16em; }
+.study-app .tutor-symbol, .study-app .play-icon, .study-app .discover-icon {
+  border: 0; border-radius: 20px;
+  background: color-mix(in srgb, var(--accent) 13%, var(--panel-soft));
+  box-shadow: none;
 }
-.study-app .settings-card, .study-app .news-card, .study-app .learning-card,
-.study-app .mini-game-card { border-radius: 20px; }
-.study-app .settings-form { gap: 20px; }
-.study-app .settings-card { padding: clamp(23px,3vw,36px); }
-.study-app .toggle-row { border-bottom-color: var(--experience-line); padding-block: 16px; }
-.study-app .settings-form input:not([type=checkbox]), .study-app .settings-form select,
-.study-app .stack-form input, .study-app .stack-form textarea {
-  border-radius: 11px; border-color: var(--experience-line);
-}
-.study-app .profile-grid { gap: 24px; align-items: start; }
-.study-app .stack-form { gap: 21px; }
-.study-app .photo-card { text-align: center; }
-.study-app .chat-page, .study-app .discover-page, .study-app .play-page,
-.study-app .personal-page { max-width: 1360px; }
-.study-app .chat-suggestions { gap: 16px; margin: 24px 0 32px; }
+.study-app .chat-tools { margin: 22px 0; }
+.study-app .preference-chip { border: 0; background: color-mix(in srgb, var(--panel-soft) 68%, transparent); }
+.study-app .chat-suggestions { gap: 15px; margin-bottom: 30px; }
 .study-app .chat-suggestions button {
-  border: 0; border-radius: 18px; padding: 22px; min-height: 128px;
-  background: linear-gradient(145deg,var(--panel),var(--panel-soft));
-  box-shadow: 0 12px 30px rgba(0,0,0,.06);
+  min-height: 128px; padding: 21px; border: 0; border-radius: 19px;
+  background: linear-gradient(145deg, var(--panel-soft), var(--panel));
+  box-shadow: 0 12px 30px rgba(16, 13, 35, .055);
+  transition: transform .22s ease, box-shadow .22s ease;
 }
-.study-app .chat-suggestions button:hover { transform: translateY(-3px); }
-.study-app .chat-history { border: 0; border-bottom: 1px solid var(--experience-line); border-radius: 0; background: transparent; }
+.study-app .chat-suggestions button:hover { transform: translateY(-3px); box-shadow: 0 18px 36px rgba(16, 13, 35, .10); }
+.study-app .chat-history {
+  padding: 16px 0; border: 0; border-bottom: 1px solid var(--experience-line);
+  border-radius: 0; background: transparent;
+}
 .study-app .chat-history-item { border: 0; border-radius: 999px; background: var(--panel-soft); }
 .study-app .conversation { gap: 15px; }
-.study-app .chat-message { border-radius: 17px; padding: 19px 21px; }
-.study-app .chat-message.user { background: color-mix(in srgb,var(--accent) 12%,var(--panel)); box-shadow: none; }
-.study-app .chat-compose { border-radius: 18px; border-color: color-mix(in srgb,var(--accent) 24%,transparent); box-shadow: 0 14px 36px rgba(0,0,0,.07); }
-.study-app .discover-section { margin-top: 44px; }
+.study-app .chat-empty, .study-app .chat-message {
+  border: 0; border-radius: 18px; background: var(--panel); box-shadow: var(--experience-shadow);
+}
+.study-app .chat-message.user { background: color-mix(in srgb, var(--accent) 12%, var(--panel-soft)); box-shadow: none; }
+.study-app .chat-compose {
+  padding: 17px 19px; border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  border-radius: 20px; background: var(--panel); box-shadow: var(--experience-shadow);
+}
+.study-app .chat-compose:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 9%, transparent), var(--experience-shadow);
+}
+.study-app .settings-form { gap: 17px; }
+.study-app .settings-card {
+  padding: clamp(21px, 3vw, 32px); border: 0; border-radius: 20px;
+  background: var(--panel); box-shadow: var(--experience-shadow);
+}
+.study-app .settings-card legend { color: var(--text); }
+.study-app .toggle-row { border-bottom: 1px solid var(--experience-line); }
+.study-app .toggle-row:last-child { border-bottom: 0; }
+.study-app .settings-form input:not([type='checkbox']), .study-app .settings-form select,
+.study-app .stack-form input, .study-app .stack-form textarea {
+  border: 1px solid var(--experience-line); border-radius: 12px;
+  background: color-mix(in srgb, var(--page) 76%, var(--panel));
+}
+.study-app .reading-preview { border: 0; border-radius: 15px; background: var(--panel-soft); }
+.study-app .profile-grid { gap: 24px; }
 .study-app .news-grid, .study-app .learning-grid { gap: 21px; }
-.study-app .news-card, .study-app .learning-card { overflow: hidden; border-radius: 20px; }
-.study-app .news-card-content { padding: 21px; }
-.study-app .news-card h3, .study-app .learning-card h3 { line-height: 1.45; letter-spacing: -.02em; }
-.study-app .discover-categories button { border: 0; border-radius: 999px; background: var(--panel-soft); padding: 10px 16px; }
-.study-app .discover-categories button.active { background: color-mix(in srgb,var(--accent) 17%,var(--panel)); }
-.study-app .game-picker { border: 0; border-radius: 15px; padding: 6px; background: var(--panel); }
-.study-app .game-picker button { border: 0; border-radius: 10px; }
-.study-app .mini-game-card { border-radius: 22px; }
-.study-app .play-stats > div { border: 0; border-radius: 14px; background: var(--panel-soft); }
+.study-app .news-card, .study-app .learning-card {
+  border: 0; border-radius: 20px; background: var(--panel);
+  box-shadow: var(--experience-shadow); transition: transform .22s ease, box-shadow .22s ease;
+}
+.study-app .news-card:hover, .study-app .learning-card:hover {
+  transform: translateY(-3px); box-shadow: 0 22px 42px rgba(16, 13, 35, .11);
+}
+.study-app .news-card-content { padding: 20px; }
+.study-app .discover-categories button { border: 0; border-radius: 999px; background: var(--panel-soft); }
+.study-app .discover-categories button.active { background: color-mix(in srgb, var(--accent) 18%, var(--panel-soft)); color: var(--text); }
+.study-app .game-picker { padding: 6px; border: 0; border-radius: 16px; background: var(--panel); }
+.study-app .game-picker button { border: 0; border-radius: 11px; }
+.study-app .mini-game-card { border: 0; border-radius: 22px; background: var(--panel); box-shadow: var(--experience-shadow); }
+.study-app .play-stats > div { border: 0; border-radius: 15px; background: var(--panel-soft); }
+.study-app .primary-button, .study-app .secondary-button, .study-app .danger-button,
+.study-app .icon-button { border-radius: 12px; transition: transform .18s ease, filter .18s ease, box-shadow .18s ease; }
+.study-app .primary-button { box-shadow: 0 8px 20px color-mix(in srgb, var(--button) 20%, transparent); }
+.study-app .primary-button:hover:not(:disabled) { transform: translateY(-1px); }
+.study-app .secondary-button, .study-app .icon-button { border-color: transparent; background: var(--panel-soft); }
 
-/* Espaço de Estudos: composição limpa. Caderno em papel marfim e ameixa,
-   sem capa verde, sem decoração excessiva e sem mexer no YouTube/IA. */
-.study-app .study-space-page { max-width: 1540px; }
-.study-app .study-space-heading { align-items: center; }
+/* Espaço de Estudos: ferramentas bem hierarquizadas e caderno sem excesso visual. */
+.study-app .study-space-page { max-width: 1500px; }
+.study-app .study-space-heading { align-items: center; gap: 24px; padding: 4px 0 18px; }
+.study-app .study-space-heading h1 { font-size: clamp(2rem, 3.1vw, 2.7rem); }
+.study-app .study-space-heading p { max-width: 680px; font-size: .9rem; }
+.study-app .study-space-save {
+  border: 0; border-radius: 999px; background: var(--panel-soft);
+  padding: 10px 14px; white-space: nowrap;
+}
+.study-app .save-indicator, .study-app .save-indicator.saving {
+  background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 13%, transparent);
+}
 .study-app .study-space-toolbar {
-  border: 0; border-radius: 16px; padding: 15px 18px; margin-bottom: 22px;
-  background: color-mix(in srgb,var(--panel) 82%,transparent);
-  box-shadow: 0 8px 26px rgba(0,0,0,.045);
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding: 16px 19px; margin-bottom: 22px; border: 0; border-radius: 18px;
+  background: var(--panel); box-shadow: 0 10px 28px rgba(16, 13, 35, .045);
 }
-.study-app .study-layout-options { gap: 7px; }
-.study-app .study-layout-options button { border: 0; border-radius: 999px; padding: 10px 15px; background: var(--panel-soft); }
-.study-app .study-layout-options button.selected { background: color-mix(in srgb,var(--accent) 18%,var(--panel)); }
-.study-app .study-workspace-grid { gap: 20px; align-items: stretch; }
-.study-app .study-tool-panel { border: 0; border-radius: 20px; overflow: hidden; box-shadow: var(--experience-shadow); }
-.study-app .notes-panel { background: #f1eee8; color: #34313b; box-shadow: 0 18px 45px rgba(20,16,30,.10); }
-.study-app .notes-panel .study-tool-header {
-  height: 76px; padding: 0 20px; border: 0;
-  background: linear-gradient(110deg,#e7e0d7,#f0ece5); color: #413a49;
+.study-app .study-space-toolbar-title { gap: 12px; }
+.study-app .study-space-toolbar-title div { gap: 4px; }
+.study-app .study-layout-options { display: flex; flex-wrap: wrap; gap: 7px; }
+.study-app .study-layout-options button {
+  min-height: 39px; padding: 9px 15px; border: 0; border-radius: 999px;
+  background: var(--panel-soft); color: var(--muted); font-size: .74rem;
 }
-.study-app .notes-panel .study-tool-header strong {
-  color: #393241; font-family: Georgia,"Times New Roman",serif; font-size: 1.06rem; font-weight: 600; letter-spacing: .01em;
+.study-app .study-layout-options button.selected {
+  color: var(--text); background: color-mix(in srgb, var(--accent) 17%, var(--panel-soft));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 24%, transparent);
 }
-.study-app .notes-panel .study-tool-header small { color: #817887; }
-.study-app .notes-panel .study-tool-icon { background: #ded5e8; color: #705c83; border-radius: 11px; }
-.study-app .notes-panel .study-tool-status { color: #7b7180; }
+.study-app .study-workspace-grid { gap: 19px; align-items: stretch; }
+.study-app .study-tool-panel {
+  min-width: 0; border: 0; border-radius: 20px; overflow: hidden;
+  background: var(--panel); box-shadow: var(--experience-shadow);
+}
+.study-app .study-tool-header {
+  height: 68px; padding-inline: 19px; border-bottom: 1px solid var(--experience-line);
+  background: color-mix(in srgb, var(--panel-soft) 42%, var(--panel));
+}
+.study-app .study-tool-icon { border-radius: 11px; }
+.study-app .notes-panel { background: color-mix(in srgb, var(--panel) 96%, #eee8f3); color: var(--text); }
+.study-app .notes-panel .study-tool-header { background: color-mix(in srgb, var(--panel-soft) 58%, var(--panel)); color: var(--text); }
+.study-app .notes-panel .study-tool-header strong { font-family: Georgia, 'Times New Roman', serif; font-size: 1rem; font-weight: 600; }
+.study-app .notes-panel .study-tool-header small, .study-app .notes-panel .study-tool-status { color: var(--muted); }
 .study-app .notes-panel .notebook-toolbar {
   display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
-  padding: 9px 13px; border: 0; background: #e9e4dc;
+  padding: 9px 12px; border: 0; background: color-mix(in srgb, var(--panel-soft) 65%, var(--panel));
 }
 .study-app .notes-panel .notebook-toolbar button,
 .study-app .notes-panel .notebook-toolbar select,
 .study-app .notes-panel .notebook-color {
-  min-width: 30px; height: 30px; border: 0; border-radius: 7px;
-  background: #f7f4ee; color: #62596a; box-shadow: none;
+  min-width: 31px; height: 31px; padding: 0 8px; border: 0; border-radius: 8px;
+  background: var(--panel); color: var(--text); box-shadow: none;
 }
 .study-app .notes-panel .notebook-toolbar button:hover,
-.study-app .notes-panel .notebook-toolbar select:hover { background: #ded5e8; }
+.study-app .notes-panel .notebook-toolbar select:hover,
+.study-app .notes-panel .notebook-color:hover { background: color-mix(in srgb, var(--accent) 13%, var(--panel)); }
+.study-app .notes-panel .notebook-toolbar select { max-width: 112px; }
 .study-app .notes-panel .notebook-toolbar-spacer { flex: 1; }
 .study-app .notes-panel .notebook-paper {
-  min-height: 500px; margin: 0 12px 0; padding: 27px 28px 34px 55px;
-  border-radius: 3px 3px 9px 9px; background-color: #fffefa;
-  background-image: linear-gradient(to bottom,transparent 31px,#e8e4e9 32px);
-  background-size: 100% 32px; box-shadow: 0 3px 14px rgba(45,35,50,.055);
+  min-height: 500px; margin: 0 11px; padding: 26px 25px 32px 54px;
+  border-radius: 3px 3px 9px 9px; background-color: color-mix(in srgb, var(--panel) 93%, var(--page));
+  background-image: linear-gradient(to bottom, transparent 31px, color-mix(in srgb, var(--accent) 13%, transparent) 32px);
+  background-size: 100% 32px; box-shadow: 0 3px 14px rgba(16, 13, 35, .045);
 }
-.study-app .notes-panel .notebook-margin { left: 39px; background: #e7c9cb; }
+.study-app .notes-panel .notebook-margin { left: 39px; background: color-mix(in srgb, var(--accent) 32%, transparent); }
 .study-app .notes-panel .notebook-editor {
-  min-height: 440px; color: #383440; font-family: Georgia,"Times New Roman",serif;
-  font-size: 16px; line-height: 32px; caret-color: #806b91;
+  min-height: 440px; color: var(--text); font-family: Georgia, 'Times New Roman', serif;
+  font-size: 16px; line-height: 32px; caret-color: var(--accent);
 }
-.study-app .notes-panel .notebook-editor:empty::before { color: #aaa3ad; }
-.study-app .notes-panel .notes-footer { border: 0; padding: 12px 17px; background: #f1eee8; color: #817887; }
-.study-app .video-panel { background: color-mix(in srgb,var(--panel) 97%,#879bc4); }
-.study-app .video-panel .study-tool-header { background: color-mix(in srgb,#879bc4 10%,var(--panel)); }
-.study-app .ai-panel { background: color-mix(in srgb,var(--panel) 97%,#9380c6); }
+.study-app .notes-panel .notebook-editor:empty::before { color: var(--muted); opacity: .7; }
+.study-app .notes-panel .notes-footer {
+  padding: 12px 17px; border: 0; background: color-mix(in srgb, var(--panel-soft) 45%, var(--panel)); color: var(--muted);
+}
+.study-app .video-panel, .study-app .ai-panel { min-height: 620px; }
+.study-app .video-player-wrap { border-radius: 15px; }
+.study-app .ai-panel { background: color-mix(in srgb, var(--panel) 97%, var(--accent)); }
 .study-app .ai-panel .chat-compose { box-shadow: none; }
-.study-app .study-space-tip { margin-top: 22px; padding: 15px 2px; border-top: 1px solid var(--experience-line); border-radius: 0; background: transparent; }
+.study-app .study-space-tip {
+  margin-top: 21px; padding: 15px 2px; border: 0; border-top: 1px solid var(--experience-line);
+  border-radius: 0; background: transparent;
+}
+.study-app .study-content > section { animation: monisa-soft-enter .32s ease both; }
+@keyframes monisa-soft-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+:root[data-theme='contrast'] .study-app .settings-card,
+:root[data-theme='contrast'] .study-app .chat-empty,
+:root[data-theme='contrast'] .study-app .chat-message,
+:root[data-theme='contrast'] .study-app .news-card,
+:root[data-theme='contrast'] .study-app .learning-card,
+:root[data-theme='contrast'] .study-app .study-tool-panel,
+:root[data-theme='contrast'] .study-app .mini-game-card { outline: 1px solid var(--border); }
 
-:root[data-theme='contrast'] .study-app .notes-panel,
-:root[data-theme='contrast'] .study-app .notes-panel .notebook-paper { outline: 2px solid #fff; }
-@media (max-width: 1050px) {
+@media (min-width: 1380px) {
+  .study-app .study-workspace-grid.panels-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .study-app .study-workspace-grid.panels-3 .ai-panel { grid-column: auto; }
+}
+@media (max-width: 1100px) {
   .study-app .study-sidebar { width: 235px; }
-  .study-app .study-workspace-grid.panels-3 { grid-template-columns: repeat(2,minmax(0,1fr)); }
-  .study-app .study-workspace-grid.panels-3 .ai-panel { grid-column: 1/-1; }
+  .study-app .study-workspace-grid.panels-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .study-app .study-workspace-grid.panels-3 .ai-panel { grid-column: 1 / -1; }
+  .study-app .study-space-toolbar { align-items: flex-start; flex-direction: column; }
 }
 @media (max-width: 760px) {
-  .study-app .study-content { padding: 27px 17px 42px; }
-  .study-app .study-sidebar { background: var(--panel); }
-  .study-app .study-workspace-grid, .study-app .study-workspace-grid.panels-3 { grid-template-columns: minmax(0,1fr); }
+  .study-app .study-sidebar { width: 275px; background: var(--panel); }
+  .study-app .study-header { height: 68px; }
+  .study-app .study-content { padding: 28px 17px 42px; }
+  .study-app .chat-suggestions button { min-height: 0; }
+  .study-app .study-space-heading { align-items: flex-start; flex-direction: column; }
+  .study-app .study-space-save { white-space: normal; }
+  .study-app .study-workspace-grid, .study-app .study-workspace-grid.panels-3 { grid-template-columns: minmax(0, 1fr); }
   .study-app .study-workspace-grid.panels-3 .ai-panel { grid-column: auto; }
-  .study-app .news-card { grid-template-columns: 1fr; }
-  .study-app .news-card > img, .study-app .news-image-placeholder { width: 100%; height: 170px; min-height: 170px; }
-  .study-app .notes-panel .notebook-paper { margin-inline: 8px; padding-left: 46px; }
-  .study-app .notes-panel .notebook-margin { left: 30px; }
+  .study-app .study-tool-panel { min-height: 490px; }
+  .study-app .notes-panel .notebook-paper { min-height: 420px; margin-inline: 8px; padding: 22px 15px 26px 47px; }
+  .study-app .notes-panel .notebook-margin { left: 33px; }
+  .study-app .notes-panel .notebook-editor { min-height: 360px; }
+  .study-app .study-layout-options { width: 100%; }
+  .study-app .study-layout-options button { flex: 1 1 calc(50% - 7px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .study-app .study-content > section { animation: none; }
+  .study-app .study-content > section, .study-app .study-sidebar nav a,
+  .study-app .chat-suggestions button, .study-app .news-card,
+  .study-app .learning-card, .study-app .primary-button,
+  .study-app .secondary-button, .study-app .icon-button,
+  .study-app .study-tool-panel { animation: none; transition: none; }
 }
