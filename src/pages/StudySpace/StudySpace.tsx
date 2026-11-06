@@ -39,7 +39,7 @@ export default function StudySpace() {
     try { content = localStorage.getItem(storageKey) || '' } catch { content = '' }
     setNotesHtml(content)
     if (editorRef.current) editorRef.current.innerHTML = content
-    setWordCount(content.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').trim().split(/\s+/).filter(Boolean).length)
+    setWordCount(editorRef.current?.innerText.trim().split(/\s+/).filter(Boolean).length || 0)
     setNotesLoaded(true)
   }, [storageKey])
 
@@ -139,15 +139,15 @@ export default function StudySpace() {
             <option value="2">Pequena</option><option value="3">Normal</option><option value="4">Grande</option><option value="5">Título</option>
           </select>
           <button type="button" title="Negrito" aria-label="Negrito" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('bold')}><Bold size={16}/></button>
-          <button type="button" title="Itálico" aria-label="Itálico" onClick={() => formatNote('italic')}><Italic size={16}/></button>
-          <button type="button" title="Sublinhado" aria-label="Sublinhado" onClick={() => formatNote('underline')}><Underline size={16}/></button>
+          <button type="button" title="Itálico" aria-label="Itálico" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('italic')}><Italic size={16}/></button>
+          <button type="button" title="Sublinhado" aria-label="Sublinhado" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('underline')}><Underline size={16}/></button>
           <label className="notebook-color" title="Cor do texto"><Palette size={16}/><input type="color" aria-label="Cor do texto" defaultValue="#26345a" onChange={event => formatNote('foreColor', event.target.value)}/></label>
           <label className="notebook-color highlight-control" title="Marca-texto"><Highlighter size={16}/><input type="color" aria-label="Cor do marca-texto" defaultValue="#fff09a" onChange={event => formatNote('hiliteColor', event.target.value)}/></label>
-          <button type="button" title="Lista com marcadores" aria-label="Lista com marcadores" onClick={() => formatNote('insertUnorderedList')}><List size={16}/></button>
-          <button type="button" title="Lista numerada" aria-label="Lista numerada" onClick={() => formatNote('insertOrderedList')}><ListOrdered size={16}/></button>
+          <button type="button" title="Lista com marcadores" aria-label="Lista com marcadores" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('insertUnorderedList')}><List size={16}/></button>
+          <button type="button" title="Lista numerada" aria-label="Lista numerada" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('insertOrderedList')}><ListOrdered size={16}/></button>
           <span className="notebook-toolbar-spacer"/>
-          <button type="button" title="Desfazer" aria-label="Desfazer" onClick={() => formatNote('undo')}><Undo2 size={16}/></button>
-          <button type="button" title="Refazer" aria-label="Refazer" onClick={() => formatNote('redo')}><Redo2 size={16}/></button>
+          <button type="button" title="Desfazer" aria-label="Desfazer" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('undo')}><Undo2 size={16}/></button>
+          <button type="button" title="Refazer" aria-label="Refazer" onMouseDown={event => event.preventDefault()} onClick={() => formatNote('redo')}><Redo2 size={16}/></button>
         </div>
         <div className="notebook-paper">
           <div className="notebook-margin" aria-hidden="true"/>
