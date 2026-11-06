@@ -32,6 +32,7 @@ export default function MagicRunner(){
   const spawn=useRef(.8)
   const nextId=useRef(1)
   const raf=useRef(0)
+  const audioContext=useRef<AudioContext|null>(null)
 
   const finish=useCallback(()=>{
     runningRef.current=false
@@ -44,7 +45,29 @@ export default function MagicRunner(){
     if(!runningRef.current||y.current>0||duck.current)return
     velocity.current=690;setJumping(true)
   },[])
-  const setDuck=(value:boolean)=>{duck.current=value;setDucking(value)}
+  const setDuck=(value:boolean)=>{
+    if(value&&!duck.current){
+      try{
+        const AudioContextClass=window.AudioContext
+        if(AudioContextClass){
+          const context=audioContext.current??new AudioContextClass()
+          audioContext.current=context
+          if(context.state==='suspended')void context.resume()
+          const oscillator=context.createOscillator()
+          const gain=context.createGain()
+          oscillator.type='sine'
+          oscillator.frequency.setValueAtTime(520,context.currentTime)
+          oscillator.frequency.exponentialRampToValueAtTime(210,context.currentTime+0.11)
+          gain.gain.setValueAtTime(0.0001,context.currentTime)
+          gain.gain.exponentialRampToValueAtTime(0.09,context.currentTime+0.015)
+          gain.gain.exponentialRampToValueAtTime(0.0001,context.currentTime+0.13)
+          oscillator.connect(gain);gain.connect(context.destination)
+          oscillator.start();oscillator.stop(context.currentTime+0.14)
+        }
+      }catch{/* áudio opcional; o jogo continua normalmente */}
+    }
+    duck.current=value;setDucking(value)
+  }
   const start=useCallback(()=>{
     cancelAnimationFrame(raf.current)
     runningRef.current=true;y.current=0;velocity.current=0;points.current=0;speed.current=300
@@ -112,7 +135,7 @@ export default function MagicRunner(){
     <div className="runner-score-row"><span>Pontos <strong>{score}</strong></span><span><Trophy size={15}/> Recorde <strong>{best}</strong></span><span className="runner-stage-label">{current.name}</span></div>
     <div ref={world} className={`runner-world ${current.className}${running?' runner-playing':''}${over?' runner-ended':''}`} aria-label={current.name}>
       <div className="runner-sky-stars" aria-hidden="true">✦　 ·　 ✧　　 ·　 ✦　　✧</div>
-      <div ref={player} className={`runner-player-stick${jumping?' jumping':''}`} aria-label="Pessoa-palito correndo"><i className="stick-head"/><i className="stick-body"/><i className="stick-arm arm-one"/><i className="stick-arm arm-two"/><i className="stick-leg leg-one"/><i className="stick-leg leg-two"/></div>
+      <div ref={player} className={`runner-player-stick${jumping?' jumping':''}${ducking?' ducking':''}`} aria-label="Pessoa-palito correndo"><i className="stick-head"/><i className="stick-body"/><i className="stick-arm arm-one"/><i className="stick-arm arm-two"/><i className="stick-leg leg-one"/><i className="stick-leg leg-two"/></div>
       {obstacles.map(item=><span key={item.id} ref={node=>{if(node)obstacleNodes.current.set(item.id,node);else obstacleNodes.current.delete(item.id)}} className={`runner-obstacle-new ${item.kind}`} aria-label={item.kind==='air'?'Obstáculo no ar':'Obstáculo no chão'}/>)}
       <div className="runner-ground"><span>✦</span><span>✧</span><span>✦</span><span>✧</span><span>✦</span><span>✧</span><span>✦</span><span>✧</span></div>
       {!running&&<div className="runner-overlay"><strong>{over?'Fim de corrida!':'Pronta para correr?'}</strong><span>{over?`Você marcou ${score} pontos.`:'Pressione começar para jogar.'}</span></div>}
