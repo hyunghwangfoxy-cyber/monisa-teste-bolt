@@ -25,6 +25,7 @@ export default function MagicRunner(){
   const y=useRef(0)
   const velocity=useRef(0)
   const points=useRef(0)
+  const displayedScore=useRef(0)
   const speed=useRef(300)
   const duck=useRef(false)
   const last=useRef(0)
@@ -47,7 +48,7 @@ export default function MagicRunner(){
   const start=useCallback(()=>{
     cancelAnimationFrame(raf.current)
     runningRef.current=true;y.current=0;velocity.current=0;points.current=0;speed.current=300
-    obstacleData.current=[];last.current=0;spawn.current=.8;nextId.current=1
+    obstacleData.current=[];last.current=0;spawn.current=.8;nextId.current=1;displayedScore.current=0
     setObstacles([]);setScore(0);setStage(0);setOver(false);setJumping(false);setDuck(false);setRunning(true)
   },[])
   useEffect(()=>{
@@ -57,7 +58,7 @@ export default function MagicRunner(){
       const dt=Math.min((time-(last.current||time))/1000,.032);last.current=time
       points.current+=dt*14
       const scoreNow=Math.floor(points.current)
-      setScore(scoreNow)
+      if(scoreNow-displayedScore.current>=3){displayedScore.current=scoreNow;setScore(scoreNow)}
       const phase=scoreNow>=900?2:scoreNow>=400?1:0
       setStage(phase)
       speed.current=300+phase*70+Math.min(scoreNow*.04,100)
