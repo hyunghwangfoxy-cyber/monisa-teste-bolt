@@ -169,3 +169,24 @@
 .runner-card .runner-score-row{margin-bottom:14px}
 .runner-card .runner-controls button{touch-action:manipulation;user-select:none;-webkit-user-select:none}
 @media(max-width:520px){.piece-shape{grid-template-columns:repeat(4,13px);grid-template-rows:repeat(4,13px)}.piece-shape i{width:13px;height:13px}.runner-canvas-wrap canvas{min-height:150px}}
+
+
+/* Animação da corrida e pose de abaixar */
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-leg.leg-one{animation:runner-leg-a .18s ease-in-out infinite alternate}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-leg.leg-two{animation:runner-leg-b .18s ease-in-out infinite alternate}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-arm.arm-one{animation:runner-arm-a .18s ease-in-out infinite alternate}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-arm.arm-two{animation:runner-arm-b .18s ease-in-out infinite alternate}
+@keyframes runner-leg-a{from{transform:rotate(42deg)}to{transform:rotate(-42deg)}}
+@keyframes runner-leg-b{from{transform:rotate(-42deg)}to{transform:rotate(42deg)}}
+@keyframes runner-arm-a{from{transform:rotate(58deg)}to{transform:rotate(-35deg)}}
+@keyframes runner-arm-b{from{transform:rotate(-35deg)}to{transform:rotate(58deg)}}
+.runner-player-stick.ducking{height:25px;transform:translateY(0)!important}
+.runner-player-stick.ducking .stick-head{left:15px;top:8px;width:12px;height:12px}
+.runner-player-stick.ducking .stick-body{left:10px;top:17px;width:22px;height:3px;transform:rotate(-8deg)}
+.runner-player-stick.ducking .stick-arm{top:18px;height:10px}
+.runner-player-stick.ducking .stick-leg{top:21px;height:9px}
+.runner-player-stick.ducking .stick-leg.leg-one{transform:rotate(58deg)}
+.runner-player-stick.ducking .stick-leg.leg-two{transform:rotate(-58deg)}
+.runner-player-stick.ducking .stick-arm{animation:none}
+.runner-player-stick.ducking .stick-leg{animation:none}
+@media(prefers-reduced-motion:reduce){.runner-playing .runner-player-stick .stick-leg,.runner-playing .runner-player-stick .stick-arm{animation:none!important}}
