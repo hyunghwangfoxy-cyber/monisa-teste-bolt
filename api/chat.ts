@@ -157,8 +157,10 @@ export default async function handler(req: RequestLike, res: ResponseLike) {
     }
 
     answer = result?.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim() || ''
-  } catch {
-    return fail(res, 503, 'A Monisa não conseguiu se conectar ao Gemini agora. Tente novamente em instantes.')
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error)
+    console.error('Gemini connection error:', detail)
+    return fail(res, 503, `Falha de conexão com o Gemini: ${detail.slice(0, 180)}`)
   }
   if (!answer) return fail(res, 503, 'A Monisa não recebeu uma resposta válida. Tente novamente.')
 
