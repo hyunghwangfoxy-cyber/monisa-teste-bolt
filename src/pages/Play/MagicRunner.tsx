@@ -32,7 +32,6 @@ export default function MagicRunner(){
   const spawn=useRef(.8)
   const nextId=useRef(1)
   const raf=useRef(0)
-  const audioContext=useRef<AudioContext|null>(null)
 
   const finish=useCallback(()=>{
     runningRef.current=false
@@ -45,29 +44,7 @@ export default function MagicRunner(){
     if(!runningRef.current||y.current>0||duck.current)return
     velocity.current=690;setJumping(true)
   },[])
-  const setDuck=(value:boolean)=>{
-    if(value&&!duck.current){
-      try{
-        const AudioContextClass=window.AudioContext
-        if(AudioContextClass){
-          const context=audioContext.current??new AudioContextClass()
-          audioContext.current=context
-          if(context.state==='suspended')void context.resume()
-          const oscillator=context.createOscillator()
-          const gain=context.createGain()
-          oscillator.type='sine'
-          oscillator.frequency.setValueAtTime(520,context.currentTime)
-          oscillator.frequency.exponentialRampToValueAtTime(210,context.currentTime+0.11)
-          gain.gain.setValueAtTime(0.0001,context.currentTime)
-          gain.gain.exponentialRampToValueAtTime(0.09,context.currentTime+0.015)
-          gain.gain.exponentialRampToValueAtTime(0.0001,context.currentTime+0.13)
-          oscillator.connect(gain);gain.connect(context.destination)
-          oscillator.start();oscillator.stop(context.currentTime+0.14)
-        }
-      }catch{/* áudio opcional; o jogo continua normalmente */}
-    }
-    duck.current=value;setDucking(value)
-  }
+  const setDuck=(value:boolean)=>{duck.current=value;setDucking(value)}
   const start=useCallback(()=>{
     cancelAnimationFrame(raf.current)
     runningRef.current=true;y.current=0;velocity.current=0;points.current=0;speed.current=300
@@ -142,7 +119,7 @@ export default function MagicRunner(){
     </div>
     <div className="runner-controls">
       <button className="primary-button" onClick={running?jump:start}>{running?<><ArrowUp size={17}/> Pular</>:<><RotateCcw size={17}/>{over?' Tentar novamente':' Começar a correr'}</>}</button>
-      <button className={`secondary-button runner-duck-button${ducking?' active':''}`} onPointerDown={()=>setDuck(true)} onPointerUp={()=>setDuck(false)} onPointerLeave={()=>setDuck(false)} onPointerCancel={()=>setDuck(false)} disabled={!running}><ArrowDown size={17}/> Abaixar</button>
+      <button type="button" className={`secondary-button runner-duck-button${ducking?' active':''}`} onClick={()=>{if(running)setDuck(!ducking)}} disabled={!running}><ArrowDown size={17}/> {ducking?'Levantar':'Abaixar'}</button>
     </div>
     <p className="play-hint">Teclado: espaço ou ↑ para pular; ↓ para abaixar. No celular, use os botões. O recorde fica salvo neste dispositivo.</p>
   </div>
