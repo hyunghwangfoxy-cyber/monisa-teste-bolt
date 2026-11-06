@@ -4,6 +4,7 @@ import { Menu, Heart } from 'lucide-react'
 import { useMonisa } from '../context/MonisaContext'
 import Sidebar from './Sidebar/Sidebar'
 import '../styles/monisa-polish.css'
+import '../styles/monisa-experience.css'
 
 export default function StudyLayout() {
   const { user, loading, profile, profileLoading, error, refreshProfile } = useMonisa()
