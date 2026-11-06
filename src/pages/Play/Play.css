@@ -211,3 +211,56 @@
 @keyframes runner-aurora{from{opacity:.25;transform:translateX(-8%)}to{opacity:.8;transform:translateX(8%)}}
 @keyframes runner-phase-flash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
 @media(prefers-reduced-motion:reduce){.runner-stage-two.runner-playing,.runner-stage-three.runner-playing,.runner-stage-three::before,.runner-stage-three::after,.runner-stage-two.runner-playing::after{animation:none!important}}
+
+
+/* Movimento visível das pernas e dos braços durante a corrida */
+.runner-player-stick .stick-leg,
+.runner-player-stick .stick-arm {
+  display: block;
+  transform-origin: 50% 0;
+  backface-visibility: hidden;
+}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) {
+  animation: monisa-run-bob .2s ease-in-out infinite alternate !important;
+}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-leg.leg-one {
+  animation: monisa-leg-one .22s ease-in-out infinite alternate !important;
+}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-leg.leg-two {
+  animation: monisa-leg-two .22s ease-in-out infinite alternate !important;
+}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-arm.arm-one {
+  animation: monisa-arm-one .22s ease-in-out infinite alternate !important;
+}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-arm.arm-two {
+  animation: monisa-arm-two .22s ease-in-out infinite alternate !important;
+}
+@keyframes monisa-run-bob {
+  from { rotate: -2deg; }
+  to { rotate: 2deg; }
+}
+@keyframes monisa-leg-one {
+  from { transform: rotate(52deg); }
+  to { transform: rotate(-52deg); }
+}
+@keyframes monisa-leg-two {
+  from { transform: rotate(-52deg); }
+  to { transform: rotate(52deg); }
+}
+@keyframes monisa-arm-one {
+  from { transform: rotate(-38deg); }
+  to { transform: rotate(48deg); }
+}
+@keyframes monisa-arm-two {
+  from { transform: rotate(48deg); }
+  to { transform: rotate(-38deg); }
+}
+.runner-player-stick.jumping .stick-leg.leg-one { transform: rotate(48deg); }
+.runner-player-stick.jumping .stick-leg.leg-two { transform: rotate(-48deg); }
+.runner-player-stick.jumping .stick-arm.arm-one { transform: rotate(-65deg); }
+.runner-player-stick.jumping .stick-arm.arm-two { transform: rotate(65deg); }
+@media (prefers-reduced-motion: reduce) {
+  .runner-playing .runner-player-stick,
+  .runner-playing .runner-player-stick .stick-leg,
+  .runner-playing .runner-player-stick .stick-arm { animation: none !important; }
+}
