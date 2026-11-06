@@ -502,3 +502,25 @@
 @media (prefers-reduced-motion: reduce) {
   .study-app .study-content > section { animation: none; }
 }
+
+
+/* O cabeçalho repetia a mensagem da Home em todas as páginas.
+   Mantém somente o botão de navegação em telas pequenas. */
+.study-app .study-header {
+  display: none;
+}
+@media (max-width: 760px) {
+  .study-app .study-header {
+    display: flex;
+    height: 64px;
+    min-height: 64px;
+    padding: 0 18px;
+    border: 0;
+    background: transparent;
+  }
+  .study-app .study-header .mobile-menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
