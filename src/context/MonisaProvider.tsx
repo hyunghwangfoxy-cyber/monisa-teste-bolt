@@ -1,72 +1,99 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { getUser, handleAuthCallback, onAuthChange } from '@netlify/identity'
-import type { User } from '@netlify/identity'
+import type { User } from '@supabase/supabase-js'
 import { MonisaContext } from './MonisaContext'
 import { api } from '../lib/api'
 import { applyPreferences, defaultPreferences } from '../lib/preferences'
 import type { Profile } from '../lib/preferences'
-
-let initialization: ReturnType<typeof initialize> | undefined
-
-async function initialize() {
-  const callback = await handleAuthCallback()
-  return { user: await getUser(), recovery: callback?.type === 'recovery' }
-}
+import { supabase, supabaseConfigured } from '../lib/supabase'
 
 export default function MonisaProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [profileLoading, setProfileLoading] = useState(true)
+  const [profile, setProfileState] = useState<Profile | null>(null)
+  const [profileLoading, setProfileLoading] = useState(false)
   const [error, setError] = useState('')
   const [recoveryRequired, setRecoveryRequired] = useState(false)
 
-  useEffect(() => {
-    let active = true
-    initialization ??= initialize()
-    initialization.then(result => {
-      if (!active) return
-      setUser(result.user)
-      setRecoveryRequired(result.recovery)
-    }).catch(() => {
-      if (active) setError('Não foi possível confirmar o acesso. Abra novamente o link recebido por e-mail ou entre na sua conta.')
-    }).finally(() => { if (active) setLoading(false) })
-    const unsubscribe = onAuthChange((event, nextUser) => {
-      if (!active || event === 'token_refresh' || event === 'user_updated') return
-      setProfile(null)
-      setProfileLoading(true)
-      setError('')
-      setUser(nextUser)
-      if (event === 'recovery') setRecoveryRequired(true)
-      if (event === 'logout') {
-        setRecoveryRequired(false)
-      }
-    })
-    return () => { active = false; unsubscribe() }
-  }, [])
+  const setProfile = useCallback((next: Profile) => setProfileState(next), [])
 
   const refreshProfile = useCallback(async () => {
+    if (!supabaseConfigured) {
+      setError('A conexão com o banco ainda não foi configurada na Vercel.')
+      return
+    }
     setProfileLoading(true)
     setError('')
-    try { setProfile(await api<Profile>('/api/profile')) }
-    catch (failure) { setError(failure instanceof Error ? failure.message : 'Não foi possível carregar seu perfil.') }
-    finally { setProfileLoading(false) }
+    try {
+      setProfile(await api<Profile>('/api/profile'))
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : 'Não foi possível carregar seu perfil.')
+      throw failure
+    } finally {
+      setProfileLoading(false)
+    }
+  }, [])
+
+  const signOut = useCallback(async () => {
+    const { error: signOutError } = await supabase.auth.signOut()
+    if (signOutError) throw signOutError
+    setProfileState(null)
+    setUser(null)
+    setRecoveryRequired(false)
   }, [])
 
   useEffect(() => {
-    if (!user?.id) return
-    const controller = new AbortController()
-    api<Profile>('/api/profile', { signal: controller.signal }).then(updated => {
-      setProfile(updated)
-      setError('')
-    }).catch(failure => {
-      if (!controller.signal.aborted) setError(failure instanceof Error ? failure.message : 'Não foi possível carregar seu perfil.')
-    }).finally(() => { if (!controller.signal.aborted) setProfileLoading(false) })
-    return () => controller.abort()
-  }, [user?.id])
+    let active = true
+    if (!supabaseConfigured) {
+      setError('A conexão com o Supabase ainda não foi configurada. Adicione VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY na Vercel.')
+      setLoading(false)
+      return
+    }
+
+    const initialize = async () => {
+      const { data, error: sessionError } = await supabase.auth.getSession()
+      if (!active) return
+      if (sessionError) setError('Não foi possível recuperar sua sessão. Entre novamente.')
+      const sessionUser = data.session?.user ?? null
+      setUser(sessionUser)
+      if (sessionUser) {
+        setProfileLoading(true)
+        try { setProfile(await api<Profile>('/api/profile')) }
+        catch (failure) { setError(failure instanceof Error ? failure.message : 'Não foi possível carregar seu perfil.') }
+        finally { if (active) setProfileLoading(false) }
+      }
+      if (active) setLoading(false)
+    }
+    void initialize()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active || event === 'INITIAL_SESSION') return
+      const nextUser = session?.user ?? null
+      setUser(nextUser)
+      if (event === 'PASSWORD_RECOVERY') setRecoveryRequired(true)
+      if (!nextUser) {
+        setProfileState(null)
+        setRecoveryRequired(false)
+        return
+      }
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
+        window.setTimeout(() => {
+          if (active) void refreshProfile().catch(() => undefined)
+        }, 0)
+      }
+    })
+
+    return () => {
+      active = false
+      subscription.unsubscribe()
+    }
+  }, [refreshProfile])
 
   useEffect(() => { applyPreferences(profile?.preferences || defaultPreferences) }, [profile])
 
-  return <MonisaContext.Provider value={{ user, loading, profile, profileLoading, error, recoveryRequired, finishRecovery: () => setRecoveryRequired(false), refreshProfile, setProfile }}>{children}</MonisaContext.Provider>
+  return <MonisaContext.Provider value={{
+    user, loading, profile, profileLoading, error, recoveryRequired,
+    finishRecovery: () => setRecoveryRequired(false),
+    refreshProfile, setProfile, signOut,
+  }}>{children}</MonisaContext.Provider>
 }
