@@ -117,3 +117,150 @@
 .draw-canvas { display: block; width: 100%; height: auto; min-height: 210px; border: 1px solid var(--border); border-radius: 16px; background: #fff; cursor: crosshair; touch-action: none; }
 .draw-note { margin-top: 12px !important; color: var(--muted); font-size: .85rem; }
 @media (max-width: 600px) { .draw-canvas { min-height: 180px; } .draw-tools { align-items: flex-start; } }
+
+/* Color Block */
+.color-block-card{max-width:760px;margin-inline:auto}
+.color-block-stats,.runner-score-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:18px 0;color:var(--muted);font-size:.9rem}
+.color-block-stats span,.runner-score-row span{display:inline-flex;align-items:center;gap:7px}
+.color-block-stats strong,.runner-score-row strong{color:var(--text);font-size:1.15rem;font-variant-numeric:tabular-nums}
+.color-block-board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;width:min(100%,440px);margin:0 auto;padding:10px;border-radius:18px;background:color-mix(in srgb,var(--panel-soft) 88%,#8c78e8 12%);touch-action:manipulation}
+.color-block-cell{aspect-ratio:1;min-width:0;border:0;border-radius:5px;background:var(--cell-color);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 7%,transparent);transition:background .12s}
+.color-block-cell:not(:disabled){cursor:pointer}
+.color-block-tray{display:flex;justify-content:center;align-items:center;gap:14px;margin:18px auto 4px}
+.color-block-piece{display:grid;place-items:center;width:30%;min-height:92px;border:1px solid transparent;border-radius:14px;background:var(--panel-soft)}
+.color-block-piece.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--panel))}
+.piece-shape{display:grid;grid-template-columns:repeat(3,18px);grid-template-rows:repeat(3,18px);gap:3px}
+.piece-shape i{display:block;border-radius:4px;background:var(--piece-color)}
+.runner-score-row{justify-content:flex-start}
+.runner-stage-label{margin-left:auto;color:var(--accent)!important;font-weight:750}
+.runner-world{height:250px;border:0;transition:background .6s}
+.runner-stage-one{background:linear-gradient(180deg,#f6d9c9 0%,#f8e9dc 68%,#d7b8a9 68%)}
+.runner-stage-two{background:linear-gradient(180deg,#7770b6 0%,#b3a5d9 68%,#665d99 68%)}
+.runner-stage-three{background:linear-gradient(180deg,#172447 0%,#39466e 68%,#252d4b 68%)}
+.runner-player-stick{position:absolute;z-index:3;left:82px;bottom:24px;width:38px;height:48px;transform-origin:bottom center;color:#fff}
+.stick-head{position:absolute;left:12px;top:0;width:14px;height:14px;border:3px solid currentColor;border-radius:50%}
+.stick-body{position:absolute;left:18px;top:15px;width:3px;height:19px;background:currentColor;border-radius:4px}
+.stick-arm,.stick-leg{position:absolute;left:18px;top:19px;width:3px;height:15px;background:currentColor;border-radius:4px;transform-origin:top center}
+.stick-arm.arm-one{transform:rotate(48deg)}.stick-arm.arm-two{transform:rotate(-48deg)}
+.stick-leg{top:32px;height:16px}.stick-leg.leg-one{transform:rotate(28deg)}.stick-leg.leg-two{transform:rotate(-28deg)}
+.runner-playing .runner-player-stick{animation:stick-run .22s ease-in-out infinite alternate}
+@keyframes stick-run{from{rotate:-5deg}to{rotate:5deg}}
+.runner-obstacle-new{position:absolute;z-index:2;left:0;width:30px;height:34px;border-radius:7px 7px 3px 3px;background:linear-gradient(135deg,#f3a56f,#ce6d69);box-shadow:inset -4px -3px 0 #0002;will-change:transform}
+.runner-obstacle-new.air{width:38px;height:23px;border-radius:12px 5px 12px 5px;background:linear-gradient(135deg,#f8df8a,#e6a84c)}
+.runner-ground{height:24px}
+.runner-overlay{position:absolute;z-index:4;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff;text-align:center;background:#10152b55;text-shadow:0 2px 8px #1118}
+.runner-overlay strong{font-size:1.35rem}.runner-overlay span{font-size:.9rem}
+.runner-duck-button.active{background:var(--panel-soft);border-color:var(--accent)}
+.runner-player-stick.jumping{animation:none}
+@media(max-width:520px){.color-block-board{gap:3px;padding:7px}.color-block-tray{gap:7px}.color-block-piece{min-height:76px}.runner-stage-label{width:100%;margin-left:0}.runner-player-stick{left:58px}}
+@media(prefers-reduced-motion:reduce){.runner-playing .runner-player-stick{animation:none}}
+
+/* Correções de interação e renderização dos minijogos */
+.color-block-board{user-select:none;-webkit-user-select:none}
+.color-block-cell.preview{background:color-mix(in srgb,var(--preview-color) 78%,white)!important;outline:2px solid var(--preview-color);outline-offset:-2px}
+.color-block-cell.preview.invalid{background:#d76f6f!important;outline-color:#a83e48}
+.color-block-message{min-height:24px;margin:12px 0 0;text-align:center;color:var(--muted);font-size:.9rem}
+.piece-shape{grid-template-columns:repeat(4,16px);grid-template-rows:repeat(4,16px)}
+.piece-shape i{width:16px;height:16px}
+.runner-canvas-wrap{position:relative;overflow:hidden;width:100%;border-radius:18px;background:#f7e4d8;line-height:0}
+.runner-canvas-wrap canvas{display:block;width:100%;height:auto;aspect-ratio:18/5}
+.runner-canvas-wrap .runner-overlay{line-height:1.4}
+.runner-canvas-wrap .runner-overlay{pointer-events:none}
+.runner-card .runner-score-row{margin-bottom:14px}
+.runner-card .runner-controls button{touch-action:manipulation;user-select:none;-webkit-user-select:none}
+@media(max-width:520px){.piece-shape{grid-template-columns:repeat(4,13px);grid-template-rows:repeat(4,13px)}.piece-shape i{width:13px;height:13px}.runner-canvas-wrap canvas{min-height:150px}}
+
+
+/* Animação da corrida e pose de abaixar */
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-leg.leg-one{animation:runner-leg-a .18s ease-in-out infinite alternate}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-leg.leg-two{animation:runner-leg-b .18s ease-in-out infinite alternate}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-arm.arm-one{animation:runner-arm-a .18s ease-in-out infinite alternate}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-arm.arm-two{animation:runner-arm-b .18s ease-in-out infinite alternate}
+@keyframes runner-leg-a{from{transform:rotate(42deg)}to{transform:rotate(-42deg)}}
+@keyframes runner-leg-b{from{transform:rotate(-42deg)}to{transform:rotate(42deg)}}
+@keyframes runner-arm-a{from{transform:rotate(58deg)}to{transform:rotate(-35deg)}}
+@keyframes runner-arm-b{from{transform:rotate(-35deg)}to{transform:rotate(58deg)}}
+.runner-player-stick.ducking{height:25px;transform:translateY(0)!important}
+.runner-player-stick.ducking .stick-head{left:15px;top:8px;width:12px;height:12px}
+.runner-player-stick.ducking .stick-body{left:10px;top:17px;width:22px;height:3px;transform:rotate(-8deg)}
+.runner-player-stick.ducking .stick-arm{top:18px;height:10px}
+.runner-player-stick.ducking .stick-leg{top:21px;height:9px}
+.runner-player-stick.ducking .stick-leg.leg-one{transform:rotate(58deg)}
+.runner-player-stick.ducking .stick-leg.leg-two{transform:rotate(-58deg)}
+.runner-player-stick.ducking .stick-arm{animation:none}
+.runner-player-stick.ducking .stick-leg{animation:none}
+@media(prefers-reduced-motion:reduce){.runner-playing .runner-player-stick .stick-leg,.runner-playing .runner-player-stick .stick-arm{animation:none!important}}
+
+
+/* Corrida mais expressiva e efeitos de mudança de fase */
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-leg.leg-one{animation:runner-leg-a .16s ease-in-out infinite alternate}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-leg.leg-two{animation:runner-leg-b .16s ease-in-out infinite alternate}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-arm.arm-one{animation:runner-arm-a .16s ease-in-out infinite alternate}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-arm.arm-two{animation:runner-arm-b .16s ease-in-out infinite alternate}
+.runner-player-stick .stick-leg,.runner-player-stick .stick-arm{will-change:transform}
+.runner-stage-two.runner-playing{animation:runner-stage-glow 1.4s ease-out}
+.runner-stage-three{background:radial-gradient(ellipse at 50% 72%,#6256a0 0%,transparent 48%),linear-gradient(180deg,#10172f 0%,#202d58 68%,#171d3b 68%)}
+.runner-stage-three::before,.runner-stage-three::after{content:"";position:absolute;inset:0;pointer-events:none}
+.runner-stage-three::before{z-index:0;background-image:radial-gradient(circle,#fff6c9 1px,transparent 1.8px),radial-gradient(circle,#b9c8ff 1px,transparent 1.8px);background-size:47px 43px,71px 67px;background-position:8px 10px,29px 24px;animation:runner-stars-drift 8s linear infinite}
+.runner-stage-three::after{z-index:1;inset:auto 0 24px;height:48px;background:linear-gradient(90deg,transparent,#9d83ff55,transparent);filter:blur(12px);animation:runner-aurora 2.8s ease-in-out infinite alternate}
+.runner-stage-three.runner-playing{animation:runner-night-arrive 1.6s ease-out}
+.runner-stage-two.runner-playing::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 75% 22%,#fff6cf88,transparent 28%);animation:runner-phase-flash 1.2s ease-out forwards}
+@keyframes runner-stage-glow{0%{filter:brightness(1)}35%{filter:brightness(1.3) saturate(1.25)}100%{filter:brightness(1)}}
+@keyframes runner-night-arrive{0%{filter:brightness(1.8)}45%{filter:brightness(1.25)}100%{filter:brightness(1)}}
+@keyframes runner-stars-drift{from{background-position:8px 10px,29px 24px}to{background-position:55px 53px,100px 91px}}
+@keyframes runner-aurora{from{opacity:.25;transform:translateX(-8%)}to{opacity:.8;transform:translateX(8%)}}
+@keyframes runner-phase-flash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.runner-stage-two.runner-playing,.runner-stage-three.runner-playing,.runner-stage-three::before,.runner-stage-three::after,.runner-stage-two.runner-playing::after{animation:none!important}}
+
+
+/* Movimento visível das pernas e dos braços durante a corrida */
+.runner-player-stick .stick-leg,
+.runner-player-stick .stick-arm {
+  display: block;
+  transform-origin: 50% 0;
+  backface-visibility: hidden;
+}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) {
+  animation: monisa-run-bob .2s ease-in-out infinite alternate !important;
+}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-leg.leg-one {
+  animation: monisa-leg-one .22s ease-in-out infinite alternate !important;
+}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-leg.leg-two {
+  animation: monisa-leg-two .22s ease-in-out infinite alternate !important;
+}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-arm.arm-one {
+  animation: monisa-arm-one .22s ease-in-out infinite alternate !important;
+}
+.runner-playing .runner-player-stick:not(.jumping):not(.ducking) .stick-arm.arm-two {
+  animation: monisa-arm-two .22s ease-in-out infinite alternate !important;
+}
+@keyframes monisa-run-bob {
+  from { rotate: -2deg; }
+  to { rotate: 2deg; }
+}
+@keyframes monisa-leg-one {
+  from { transform: rotate(52deg); }
+  to { transform: rotate(-52deg); }
+}
+@keyframes monisa-leg-two {
+  from { transform: rotate(-52deg); }
+  to { transform: rotate(52deg); }
+}
+@keyframes monisa-arm-one {
+  from { transform: rotate(-38deg); }
+  to { transform: rotate(48deg); }
+}
+@keyframes monisa-arm-two {
+  from { transform: rotate(48deg); }
+  to { transform: rotate(-38deg); }
+}
+.runner-player-stick.jumping .stick-leg.leg-one { transform: rotate(48deg); }
+.runner-player-stick.jumping .stick-leg.leg-two { transform: rotate(-48deg); }
+.runner-player-stick.jumping .stick-arm.arm-one { transform: rotate(-65deg); }
+.runner-player-stick.jumping .stick-arm.arm-two { transform: rotate(65deg); }
+@media (prefers-reduced-motion: reduce) {
+  .runner-playing .runner-player-stick,
+  .runner-playing .runner-player-stick .stick-leg,
+  .runner-playing .runner-player-stick .stick-arm { animation: none !important; }
+}

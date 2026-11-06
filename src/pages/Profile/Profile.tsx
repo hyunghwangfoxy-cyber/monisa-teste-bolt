@@ -1,18 +1,22 @@
 import { useRef, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
-import { Camera, UserRound, Check, Trash2 } from 'lucide-react'
+import { Camera, UserRound, Check, Trash2, LogOut, AlertTriangle } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { useMonisa } from '../../context/MonisaContext'
 import { api, jsonRequest } from '../../lib/api'
 import type { Profile as ProfileData } from '../../lib/preferences'
 
 export default function Profile() {
-  const { user, profile, setProfile } = useMonisa()
+  const { user, profile, setProfile, signOut, deleteAccount } = useMonisa()
+  const navigate = useNavigate()
   const [name, setName] = useState(profile?.name || '')
   const [bio, setBio] = useState(profile?.bio || '')
   const [subject, setSubject] = useState(profile?.subject || '')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [showDelete, setShowDelete] = useState(false)
+  const [confirmation, setConfirmation] = useState('')
   const fileInput = useRef<HTMLInputElement>(null)
 
   async function save(event: FormEvent<HTMLFormElement>) {
@@ -55,6 +59,33 @@ export default function Profile() {
     }
   }
 
+  async function exit() {
+    if (busy) return
+    setBusy(true)
+    setError('')
+    try {
+      await signOut()
+      localStorage.removeItem('monisa-demo-messages')
+      navigate('/', { replace: true })
+    } catch {
+      setError('Não foi possível sair. Tente novamente.')
+      setBusy(false)
+    }
+  }
+
+  async function removeAccount() {
+    if (busy || confirmation !== 'EXCLUIR') return
+    setBusy(true)
+    setError('')
+    try {
+      await deleteAccount()
+      navigate('/', { replace: true })
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : 'Não foi possível excluir sua conta.')
+      setBusy(false)
+    }
+  }
+
   if (!profile) return null
   return <section className="personal-page" aria-labelledby="profile-title">
     <div className="page-heading"><span className="eyebrow">UM ESPAÇO COM A SUA CARA</span><h1 id="profile-title">Prazer, você.</h1><p>Seu nome, seus interesses e aquilo que torna esse espaço seu.</p></div>
@@ -69,6 +100,12 @@ export default function Profile() {
         <button className="primary-button" disabled={busy} type="submit"><Check size={18} />{busy ? 'Salvando…' : 'Salvar meu perfil'}</button>
       </form>
     </div>
+    <section className="settings-card account-actions" aria-labelledby="account-actions-title">
+      <div className="card-title"><UserRound size={21} /><h2 id="account-actions-title">Sua conta</h2></div>
+      <div className="account-action-row"><div><strong>Sair da conta</strong><p className="field-hint">Encerra sua sessão neste dispositivo. Seu cadastro e seus estudos continuam salvos.</p></div><button className="secondary-button" type="button" disabled={busy} onClick={exit}><LogOut size={17} />Sair da conta</button></div>
+      <div className="account-action-row danger-action"><div><strong>Excluir conta e dados</strong><p className="field-hint">Apaga permanentemente seu cadastro, perfil, conversas e dados de estudo vinculados à conta. Essa ação não pode ser desfeita.</p></div><button className="danger-button" type="button" disabled={busy} onClick={() => { setShowDelete(value => !value); setConfirmation(''); setError('') }}><Trash2 size={17} />Excluir dados</button></div>
+      {showDelete && <div className="delete-confirmation" role="group" aria-label="Confirmação de exclusão da conta"><p><AlertTriangle size={18} /> Esta ação é permanente. Para confirmar, digite <strong>EXCLUIR</strong> abaixo.</p><label>Confirmação<input value={confirmation} onChange={event => setConfirmation(event.target.value.toUpperCase())} autoComplete="off" spellCheck={false} placeholder="Digite EXCLUIR" disabled={busy} /></label><div className="button-row"><button className="secondary-button" type="button" disabled={busy} onClick={() => { setShowDelete(false); setConfirmation('') }}>Cancelar</button><button className="danger-button" type="button" disabled={busy || confirmation !== 'EXCLUIR'} onClick={removeAccount}><Trash2 size={17} />{busy ? 'Excluindo…' : 'Confirmar exclusão'}</button></div></div>}
+    </section>
     {error && <p className="form-error" role="alert">{error}</p>}
     {notice && <p className="form-success" role="status">{notice}</p>}
   </section>

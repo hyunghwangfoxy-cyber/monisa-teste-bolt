@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Brain, RotateCcw, Sparkles, Trophy, Wind, Blocks, Flower2, Heart, Gamepad2, Droplets, Pencil } from 'lucide-react'
 import './Play.css'
 import MagicRunner from './MagicRunner'
+import ColorBlock from './ColorBlock'
 import SlimeASMR from './SlimeASMR'
 import AntiStressDraw from './AntiStressDraw'
 
@@ -25,8 +26,6 @@ export default function Play() {
   const [matched, setMatched] = useState<number[]>([])
   const [moves, setMoves] = useState(0)
   const [hint, setHint] = useState(false)
-  const [blocks, setBlocks] = useState(() => Array.from({ length: 20 }, (_, id) => id))
-  const [broken, setBroken] = useState<number[]>([])
   const [breathing, setBreathing] = useState(false)
   const [breathPhase, setBreathPhase] = useState<'in' | 'out'>('in')
   const [target, setTarget] = useState(() => gardenSymbols[Math.floor(Math.random() * gardenSymbols.length)])
@@ -58,25 +57,6 @@ export default function Play() {
   }
 
   function restartMemory() { setDeck(makeDeck()); setOpen([]); setMatched([]); setMoves(0); setHint(false) }
-  function restartBlocks() { setBlocks(Array.from({ length: 20 }, (_, id) => id)); setBroken([]) }
-  function playBlockSound() {
-    try {
-      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
-      if (!AudioContextClass) return
-      const context = new AudioContextClass()
-      const oscillator = context.createOscillator()
-      const gain = context.createGain()
-      oscillator.type = 'triangle'
-      oscillator.frequency.setValueAtTime(420, context.currentTime)
-      oscillator.frequency.exponentialRampToValueAtTime(150, context.currentTime + 0.09)
-      gain.gain.setValueAtTime(0.0001, context.currentTime)
-      gain.gain.exponentialRampToValueAtTime(0.12, context.currentTime + 0.012)
-      gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.12)
-      oscillator.connect(gain); gain.connect(context.destination)
-      oscillator.start(); oscillator.stop(context.currentTime + 0.13)
-      oscillator.onended = () => { void context.close() }
-    } catch { /* áudio opcional */ }
-  }
   function newGarden() {
     const nextTarget = gardenSymbols[Math.floor(Math.random() * gardenSymbols.length)]
     setTarget(nextTarget)
@@ -108,18 +88,7 @@ export default function Play() {
       </>}
     </>}
 
-    {game === 'blocks' && <div className="mini-game-card">
-      <div className="mini-game-copy"><span className="mini-game-tag"><Blocks size={16} /> FASE LIVRE</span><h2>Quebra-blocos mágicos</h2><p>Como num jogo de plataforma, sua missão é limpar o caminho. Toque nos blocos para quebrá-los e ouvir um som suave. Não há vidas nem limite de tempo.</p></div>
-      <div className="block-scene" aria-label="Cenário de blocos mágicos">
-        <div className="block-sky"><span className="block-cloud">☁️</span><span className="block-hero" aria-label="Personagem">🧑‍🚀</span></div>
-        <div className="break-block-grid">
-          {blocks.map(id => <button key={id} type="button" className={'break-block' + (broken.includes(id) ? ' broken' : '')} onClick={() => { if (!broken.includes(id)) { setBroken(old => [...old, id]); playBlockSound() } }} aria-label={broken.includes(id) ? 'Bloco quebrado, estrela revelada' : 'Quebrar bloco ' + (id + 1)} disabled={broken.includes(id)}><span className="block-symbol">{broken.includes(id) ? '⭐' : '✦'}</span></button>)}
-        </div>
-        <div className="block-ground" />
-      </div>
-      <div className="mini-game-footer"><span><strong>{broken.length}</strong> de {blocks.length} blocos quebrados</span><button className="secondary-button" onClick={restartBlocks}><RotateCcw size={16} /> Recomeçar fase</button></div>
-      {broken.length === blocks.length && <p className="game-celebration" role="status">Caminho livre! Você encontrou todas as estrelas. ✨</p>}
-    </div>}
+    {game === 'blocks' && <ColorBlock />}
 
     {game === 'runner' && <MagicRunner />}
 
