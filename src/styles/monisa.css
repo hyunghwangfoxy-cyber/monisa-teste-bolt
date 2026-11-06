@@ -282,7 +282,7 @@ textarea { resize: vertical; }
 
 
 /* Monisa — refinamento visual global das áreas internas */
-:root {
+.study-app {
   --page: #080d1b;
   --panel: #101a2e;
   --panel-soft: #172541;
@@ -293,7 +293,7 @@ textarea { resize: vertical; }
   --button: #7460dc;
   --button-text: #fff;
 }
-:root[data-theme='light'] {
+:root[data-theme='light'] .study-app {
   --page: #f4f5fb;
   --panel: #ffffff;
   --panel-soft: #edf0fb;
