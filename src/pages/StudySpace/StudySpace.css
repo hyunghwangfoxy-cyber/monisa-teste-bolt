@@ -125,3 +125,62 @@
  .notebook-editor { min-height: 360px; }
 }
 @media(prefers-reduced-motion:reduce) { .study-tool-panel { animation: none; } }
+
+/* Caderno e workspace — acabamento integrado ao tema ativo */
+.study-space-page { max-width: 1500px; }
+.study-space-heading { align-items: center; margin-bottom: 24px; }
+.study-space-heading .eyebrow { color: var(--accent); font-size: .65rem; font-weight: 750; letter-spacing: .17em; }
+.study-space-heading h1 { font-size: clamp(2rem, 3vw, 2.65rem); }
+.study-space-heading p { max-width: 650px; font-size: .88rem; }
+.study-space-toolbar { display: flex; align-items: center; gap: 22px; padding: 15px 18px; border-radius: 18px; background: color-mix(in srgb, var(--panel) 88%, transparent); }
+.study-layout-options button { min-height: 39px; padding: 9px 15px; border-radius: 11px; font-size: .74rem; }
+.study-workspace-grid { gap: 18px; align-items: stretch; }
+.study-workspace-grid.panels-3 { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+.study-workspace-grid.panels-3 .ai-panel { grid-column: 1 / -1; min-height: 430px; }
+.study-tool-panel { min-height: 620px; border-radius: 20px; background: var(--panel); box-shadow: 0 16px 42px rgba(0,0,0,.09); }
+.study-tool-header { height: 66px; background: color-mix(in srgb, var(--panel-soft) 54%, transparent); }
+.notes-panel { background: var(--panel); color: var(--text); border-color: var(--border); }
+.notes-panel .study-tool-header { color: var(--text); background: color-mix(in srgb, var(--panel-soft) 58%, transparent); border-color: var(--border); }
+.notes-panel .study-tool-header small { color: var(--muted); }
+.notes-panel .study-tool-icon { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
+.notes-panel .study-tool-status { color: #75cda3; }
+.notebook-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 10px 13px; background: color-mix(in srgb, var(--panel-soft) 48%, var(--panel)); border-bottom: 1px solid var(--border); }
+.notebook-toolbar button, .notebook-toolbar select, .notebook-color { display: inline-flex; align-items: center; justify-content: center; min-width: 33px; height: 33px; padding: 0 9px; border: 1px solid var(--border); border-radius: 9px; background: var(--panel); color: var(--text); font-size: .71rem; cursor: pointer; transition: border-color .18s, background .18s, transform .18s; }
+.notebook-toolbar button:hover, .notebook-toolbar select:hover, .notebook-color:hover { border-color: var(--accent); background: var(--panel-soft); transform: translateY(-1px); }
+.notebook-toolbar select { max-width: 118px; }
+.notebook-color { position: relative; gap: 6px; }
+.notebook-color input { width: 17px; height: 17px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.notebook-color input::-webkit-color-swatch { border: 1px solid var(--border); border-radius: 5px; }
+.notebook-toolbar-spacer { flex: 1; }
+.notebook-paper { position: relative; flex: 1; min-height: 510px; margin: 0; padding: 28px 30px 34px 64px; overflow: auto; background-color: color-mix(in srgb, var(--panel) 95%, var(--page)); background-image: linear-gradient(to bottom, transparent 31px, color-mix(in srgb, var(--accent) 16%, transparent) 32px); background-size: 100% 32px; }
+.notebook-margin { position: absolute; top: 0; bottom: 0; left: 45px; width: 1px; background: color-mix(in srgb, var(--accent) 35%, transparent); pointer-events: none; }
+.notebook-editor { position: relative; z-index: 1; min-height: 450px; outline: none; color: var(--text); font-family: inherit; font-size: .94rem; line-height: 32px; overflow-wrap: anywhere; white-space: pre-wrap; caret-color: var(--accent); }
+.notebook-editor:focus-visible { outline: none; }
+.notebook-editor:empty::before { content: attr(data-placeholder); color: var(--muted); opacity: .72; pointer-events: none; white-space: pre-wrap; }
+.notebook-editor ul, .notebook-editor ol { padding-left: 25px; }
+.notes-footer { background: color-mix(in srgb, var(--panel-soft) 38%, var(--panel)); border-color: var(--border); color: var(--muted); }
+.video-panel { min-height: 620px; }
+.video-player-wrap { min-height: 260px; }
+.ai-panel { min-height: 620px; }
+.study-space-tip { border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent); background: color-mix(in srgb, var(--accent) 7%, transparent); }
+@media (min-width: 1380px) {
+ .study-workspace-grid.panels-3 { grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); }
+ .study-workspace-grid.panels-3 .ai-panel { grid-column: auto; }
+}
+@media (max-width: 1050px) {
+ .study-space-toolbar { align-items: flex-start; flex-direction: column; }
+ .study-workspace-grid.panels-3 { grid-template-columns: repeat(2,minmax(0,1fr)); }
+ .study-workspace-grid.panels-3 .ai-panel { grid-column: 1/-1; }
+}
+@media (max-width: 720px) {
+ .study-space-heading { align-items: flex-start; flex-direction: column; }
+ .study-workspace-grid, .study-workspace-grid.panels-3 { grid-template-columns: minmax(0,1fr); }
+ .study-workspace-grid.panels-3 .ai-panel { grid-column: auto; }
+ .study-tool-panel { min-height: 490px; }
+ .notebook-paper { min-height: 420px; padding: 23px 16px 28px 49px; }
+ .notebook-margin { left: 34px; }
+ .notebook-editor { min-height: 360px; }
+ .study-layout-options { width: 100%; }
+ .study-layout-options button { flex: 1 1 calc(50% - 7px); }
+}
+@media (prefers-reduced-motion: reduce) { .notebook-toolbar button, .notebook-toolbar select, .notebook-color { transition: none; } }
