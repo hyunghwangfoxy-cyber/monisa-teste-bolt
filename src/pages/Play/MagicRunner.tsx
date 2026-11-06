@@ -86,7 +86,7 @@ export default function MagicRunner(){
       }
       for(const item of obstacleData.current){
         const node=obstacleNodes.current.get(item.id)
-        if(node){node.style.transform=`translateX(${item.x-width}px)`;node.style.bottom=item.kind==='ground'?'24px':'59px'}
+        if(node){node.style.transform=`translateX(${item.x}px)`;node.style.bottom=item.kind==='ground'?'24px':'59px'}
       }
       if(player.current)player.current.style.transform=`translateY(-${y.current}px)`
       setObstacles(current=>current.length===obstacleData.current.length?current:obstacleData.current)
