@@ -154,3 +154,18 @@
 .runner-player-stick.jumping{animation:none}
 @media(max-width:520px){.color-block-board{gap:3px;padding:7px}.color-block-tray{gap:7px}.color-block-piece{min-height:76px}.runner-stage-label{width:100%;margin-left:0}.runner-player-stick{left:58px}}
 @media(prefers-reduced-motion:reduce){.runner-playing .runner-player-stick{animation:none}}
+
+/* Correções de interação e renderização dos minijogos */
+.color-block-board{user-select:none;-webkit-user-select:none}
+.color-block-cell.preview{background:color-mix(in srgb,var(--preview-color) 78%,white)!important;outline:2px solid var(--preview-color);outline-offset:-2px}
+.color-block-cell.preview.invalid{background:#d76f6f!important;outline-color:#a83e48}
+.color-block-message{min-height:24px;margin:12px 0 0;text-align:center;color:var(--muted);font-size:.9rem}
+.piece-shape{grid-template-columns:repeat(4,16px);grid-template-rows:repeat(4,16px)}
+.piece-shape i{width:16px;height:16px}
+.runner-canvas-wrap{position:relative;overflow:hidden;width:100%;border-radius:18px;background:#f7e4d8;line-height:0}
+.runner-canvas-wrap canvas{display:block;width:100%;height:auto;aspect-ratio:18/5}
+.runner-canvas-wrap .runner-overlay{line-height:1.4}
+.runner-canvas-wrap .runner-overlay{pointer-events:none}
+.runner-card .runner-score-row{margin-bottom:14px}
+.runner-card .runner-controls button{touch-action:manipulation;user-select:none;-webkit-user-select:none}
+@media(max-width:520px){.piece-shape{grid-template-columns:repeat(4,13px);grid-template-rows:repeat(4,13px)}.piece-shape i{width:13px;height:13px}.runner-canvas-wrap canvas{min-height:150px}}
