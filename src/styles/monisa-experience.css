@@ -1,200 +1,167 @@
-/* Monisa Experience Refresh — identidade visual das áreas internas.
-   Camada exclusivamente visual: não altera componentes, dados ou fluxos. */
+/* Monisa — visual direction: editorial, premium, calm and consistent.
+   Apenas apresentação: preserva componentes, funcionalidades, dados e rotas. */
 .study-app {
   --experience-line: color-mix(in srgb, var(--text) 9%, transparent);
-  --experience-shadow: 0 24px 60px rgba(8, 12, 28, .12);
+  --experience-shadow: 0 22px 58px rgba(8, 12, 28, .11);
 }
-.study-app .study-content { max-width: 1720px; }
+.study-app .study-content { max-width: 1680px; padding: clamp(30px,4vw,58px) clamp(24px,4.5vw,72px) 72px; }
 .study-app .study-sidebar {
-  background: color-mix(in srgb, var(--page) 94%, var(--panel));
-  box-shadow: 12px 0 44px rgba(5, 8, 22, .10);
+  background: color-mix(in srgb, var(--page) 96%, var(--panel));
+  border: 0;
+  box-shadow: 12px 0 44px rgba(5,8,22,.08);
 }
-.study-app .study-sidebar .brand { margin-bottom: 8px; }
-.study-app .study-sidebar nav a { font-weight: 600; letter-spacing: -.01em; }
-.study-app .study-sidebar nav a.active { box-shadow: inset 3px 0 0 var(--accent); }
-.study-app .study-header { border-bottom: 1px solid var(--experience-line); }
-.study-app .study-content > section { animation: monisa-enter .42s cubic-bezier(.2,.75,.25,1) both; }
-@keyframes monisa-enter { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+.study-app .study-sidebar .brand { padding: 8px 12px 24px; }
+.study-app .study-sidebar nav { gap: 5px; }
+.study-app .study-sidebar nav a {
+  min-height: 46px; padding: 12px 14px; border: 0; border-radius: 13px;
+  font-weight: 600; letter-spacing: -.015em; transition: background .2s ease, transform .2s ease;
+}
+.study-app .study-sidebar nav a:hover { transform: translateX(2px); background: var(--panel-soft); }
+.study-app .study-sidebar nav a.active {
+  background: color-mix(in srgb, var(--accent) 13%, var(--panel));
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.study-app .sidebar-caption { margin: 29px 12px 11px; letter-spacing: .16em; }
+.study-app .study-header {
+  height: 74px; padding-inline: clamp(24px,4vw,62px); border: 0;
+  border-bottom: 1px solid var(--experience-line);
+  background: color-mix(in srgb, var(--page) 88%, transparent); backdrop-filter: blur(18px);
+}
+.study-app .study-content > section { animation: monisa-editorial-in .36s ease both; }
+@keyframes monisa-editorial-in { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Tipografia e cabeçalhos: hierarquia editorial, sem molduras desnecessárias. */
+/* Sistema tipográfico e superfícies compartilhado por todas as páginas. */
+.study-app .page-heading, .study-app .chat-heading, .study-app .play-heading,
+.study-app .study-space-heading { margin-bottom: 34px; }
+.study-app .page-heading h1, .study-app .chat-heading h1,
+.study-app .play-heading h1, .study-app .study-space-heading h1 {
+  font-weight: 760; letter-spacing: -.055em; line-height: 1.08;
+}
+.study-app .page-heading p, .study-app .chat-heading p, .study-app .play-heading p,
+.study-app .study-space-heading p { max-width: 700px; line-height: 1.8; }
 .study-app .eyebrow { letter-spacing: .17em; font-size: .66rem; }
-.study-app .page-heading h1,
-.study-app .chat-heading h1,
-.study-app .play-heading h1,
-.study-app .study-space-heading h1 { font-weight: 780; letter-spacing: -.06em; }
-.study-app .page-heading p,
-.study-app .chat-heading p,
-.study-app .play-heading p { max-width: 680px; }
-
-/* Chat: área de conversa ampla e limpa. */
-.study-app .chat-page { max-width: 1360px; }
-.study-app .chat-heading { padding: 10px 0 8px; }
-.study-app .chat-history { background: transparent; }
-.study-app .chat-history-heading { padding-bottom: 10px; }
-.study-app .chat-history-list { gap: 8px; }
-.study-app .chat-history-item { max-width: 260px; }
-.study-app .conversation { min-height: 210px; }
-.study-app .chat-empty { padding: 26px; }
-.study-app .chat-message { max-width: 88%; padding: 20px 22px; }
-.study-app .chat-compose { margin-top: 14px; }
-.study-app .chat-compose textarea { min-height: 90px; }
-
-/* Perfil e configurações: painéis com ritmo e respiro, sem cartões empilhados em excesso. */
-.study-app .personal-page { max-width: 1240px; }
-.study-app .profile-grid { gap: 26px; align-items: start; }
+.study-app .primary-button, .study-app .secondary-button, .study-app .danger-button,
+.study-app .icon-button { border-radius: 12px; transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
+.study-app .primary-button { box-shadow: 0 8px 22px color-mix(in srgb, var(--button) 20%, transparent); }
+.study-app .primary-button:hover:not(:disabled) { transform: translateY(-1px); }
+.study-app .secondary-button, .study-app .icon-button { border-color: transparent; background: var(--panel-soft); }
+.study-app .settings-card, .study-app .news-card, .study-app .learning-card,
+.study-app .mini-game-card, .study-app .study-tool-panel, .study-app .chat-empty,
+.study-app .chat-message {
+  border: 0; box-shadow: var(--experience-shadow);
+}
+.study-app .settings-card, .study-app .news-card, .study-app .learning-card,
+.study-app .mini-game-card { border-radius: 20px; }
+.study-app .settings-form { gap: 20px; }
+.study-app .settings-card { padding: clamp(23px,3vw,36px); }
+.study-app .toggle-row { border-bottom-color: var(--experience-line); padding-block: 16px; }
+.study-app .settings-form input:not([type=checkbox]), .study-app .settings-form select,
+.study-app .stack-form input, .study-app .stack-form textarea {
+  border-radius: 11px; border-color: var(--experience-line);
+}
+.study-app .profile-grid { gap: 24px; align-items: start; }
+.study-app .stack-form { gap: 21px; }
 .study-app .photo-card { text-align: center; }
-.study-app .photo-card .profile-photo { margin: 0 auto 18px; }
-.study-app .stack-form { gap: 22px; }
-.study-app .stack-form > label { gap: 9px; }
-.study-app .settings-form { max-width: 1120px; }
-.study-app .settings-card { padding: clamp(24px, 3.5vw, 38px); }
-.study-app .settings-card legend { padding: 0 10px; font-size: 1rem; }
-.study-app .settings-fields { gap: 22px; }
-.study-app .toggle-row { padding-block: 17px; }
-.study-app .save-preferences { border-top: 1px solid var(--experience-line); padding-top: 22px; }
+.study-app .chat-page, .study-app .discover-page, .study-app .play-page,
+.study-app .personal-page { max-width: 1360px; }
+.study-app .chat-suggestions { gap: 16px; margin: 24px 0 32px; }
+.study-app .chat-suggestions button {
+  border: 0; border-radius: 18px; padding: 22px; min-height: 128px;
+  background: linear-gradient(145deg,var(--panel),var(--panel-soft));
+  box-shadow: 0 12px 30px rgba(0,0,0,.06);
+}
+.study-app .chat-suggestions button:hover { transform: translateY(-3px); }
+.study-app .chat-history { border: 0; border-bottom: 1px solid var(--experience-line); border-radius: 0; background: transparent; }
+.study-app .chat-history-item { border: 0; border-radius: 999px; background: var(--panel-soft); }
+.study-app .conversation { gap: 15px; }
+.study-app .chat-message { border-radius: 17px; padding: 19px 21px; }
+.study-app .chat-message.user { background: color-mix(in srgb,var(--accent) 12%,var(--panel)); box-shadow: none; }
+.study-app .chat-compose { border-radius: 18px; border-color: color-mix(in srgb,var(--accent) 24%,transparent); box-shadow: 0 14px 36px rgba(0,0,0,.07); }
+.study-app .discover-section { margin-top: 44px; }
+.study-app .news-grid, .study-app .learning-grid { gap: 21px; }
+.study-app .news-card, .study-app .learning-card { overflow: hidden; border-radius: 20px; }
+.study-app .news-card-content { padding: 21px; }
+.study-app .news-card h3, .study-app .learning-card h3 { line-height: 1.45; letter-spacing: -.02em; }
+.study-app .discover-categories button { border: 0; border-radius: 999px; background: var(--panel-soft); padding: 10px 16px; }
+.study-app .discover-categories button.active { background: color-mix(in srgb,var(--accent) 17%,var(--panel)); }
+.study-app .game-picker { border: 0; border-radius: 15px; padding: 6px; background: var(--panel); }
+.study-app .game-picker button { border: 0; border-radius: 10px; }
+.study-app .mini-game-card { border-radius: 22px; }
+.study-app .play-stats > div { border: 0; border-radius: 14px; background: var(--panel-soft); }
 
-/* Descobrir: cartões de conteúdo mais editoriais, com imagens em destaque. */
-.study-app .discover-page { max-width: 1360px; }
-.study-app .discover-section { margin-top: 48px; }
-.study-app .discover-section-heading { margin-bottom: 22px; }
-.study-app .news-grid, .study-app .learning-grid { gap: 22px; }
-.study-app .news-card { grid-template-columns: minmax(155px, 34%) minmax(0, 1fr); border-radius: 22px; }
-.study-app .news-card > img, .study-app .news-image-placeholder { width: 100%; min-height: 220px; }
-.study-app .news-card-content { padding: 22px; }
-.study-app .news-card h3 { font-size: 1.02rem; line-height: 1.42; }
-.study-app .learning-card { padding: 26px; border-radius: 22px; }
-.study-app .discover-categories { gap: 10px; }
-
-/* Monisa Play: palco de jogo, com navegação discreta. */
-.study-app .play-page { max-width: 1360px; }
-.study-app .game-picker { display: flex; flex-wrap: wrap; gap: 7px; }
-.study-app .game-picker button { padding: 11px 14px; }
-.study-app .mini-game-card { padding: clamp(22px, 3vw, 36px); }
-.study-app .play-stats { gap: 14px; }
-.study-app .play-stats > div { padding: 18px 20px; }
-
-/* Espaço de Estudos: a referência verde é aplicada somente ao caderno.
-   O vídeo e a tutora mantêm identidades próprias dentro do mesmo workspace. */
+/* Espaço de Estudos: composição limpa. Caderno em papel marfim e ameixa,
+   sem capa verde, sem decoração excessiva e sem mexer no YouTube/IA. */
 .study-app .study-space-page { max-width: 1540px; }
-.study-app .study-space-heading { margin-bottom: 30px; }
+.study-app .study-space-heading { align-items: center; }
 .study-app .study-space-toolbar {
-  padding: 16px 19px;
-  border-radius: 17px;
-  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  border: 0; border-radius: 16px; padding: 15px 18px; margin-bottom: 22px;
+  background: color-mix(in srgb,var(--panel) 82%,transparent);
+  box-shadow: 0 8px 26px rgba(0,0,0,.045);
 }
-.study-app .study-layout-options button { min-height: 40px; }
-.study-app .study-workspace-grid { gap: 22px; }
-.study-app .study-tool-panel {
-  border: 0;
-  border-radius: 23px;
-  overflow: hidden;
-  box-shadow: var(--experience-shadow);
-}
-.study-app .notes-panel {
-  position: relative;
-  background: #e6eee2;
-  color: #263d35;
-  box-shadow: 0 24px 58px rgba(28, 56, 43, .18);
-}
-.study-app .notes-panel::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  top: 0; bottom: 0; left: 0;
-  width: 13px;
-  background: linear-gradient(90deg, #355d4d, #789681 58%, #a9bda9);
-  box-shadow: 3px 0 9px rgba(26, 54, 43, .12);
-}
+.study-app .study-layout-options { gap: 7px; }
+.study-app .study-layout-options button { border: 0; border-radius: 999px; padding: 10px 15px; background: var(--panel-soft); }
+.study-app .study-layout-options button.selected { background: color-mix(in srgb,var(--accent) 18%,var(--panel)); }
+.study-app .study-workspace-grid { gap: 20px; align-items: stretch; }
+.study-app .study-tool-panel { border: 0; border-radius: 20px; overflow: hidden; box-shadow: var(--experience-shadow); }
+.study-app .notes-panel { background: #f1eee8; color: #34313b; box-shadow: 0 18px 45px rgba(20,16,30,.10); }
 .study-app .notes-panel .study-tool-header {
-  position: relative;
-  z-index: 1;
-  min-height: 104px;
-  height: auto;
-  padding: 19px 25px 18px 34px;
-  border: 0;
-  background:
-    radial-gradient(circle at 88% 48%, rgba(17, 38, 31, .9) 0 18px, rgba(35, 67, 54, .7) 19px 27px, transparent 28px),
-    radial-gradient(circle at 88% 48%, rgba(232, 240, 220, .25) 0 38px, transparent 39px),
-    linear-gradient(112deg, #365c4c, #557b65 58%, #78927b);
-  color: #f4f1df;
+  height: 76px; padding: 0 20px; border: 0;
+  background: linear-gradient(110deg,#e7e0d7,#f0ece5); color: #413a49;
 }
-.study-app .notes-panel .study-tool-header::after {
-  content: "STUDY JOURNAL  ·  YOUR NOTES";
-  position: absolute;
-  left: 82px;
-  bottom: 15px;
-  color: rgba(246, 244, 224, .7);
-  font-size: 8px;
-  letter-spacing: .2em;
-  font-weight: 800;
+.study-app .notes-panel .study-tool-header strong {
+  color: #393241; font-family: Georgia,"Times New Roman",serif; font-size: 1.06rem; font-weight: 600; letter-spacing: .01em;
 }
-.study-app .notes-panel .study-tool-header strong { color: #fff9e9; font-family: Georgia, serif; font-size: 1.22rem; letter-spacing: .015em; }
-.study-app .notes-panel .study-tool-header small { color: rgba(250, 247, 230, .78); }
-.study-app .notes-panel .study-tool-icon { width: 39px; height: 39px; border-radius: 50%; color: #e8eedb; background: rgba(255,255,255,.13); }
-.study-app .notes-panel .study-tool-status { color: #e3ead5; margin-left: auto; align-self: flex-start; }
+.study-app .notes-panel .study-tool-header small { color: #817887; }
+.study-app .notes-panel .study-tool-icon { background: #ded5e8; color: #705c83; border-radius: 11px; }
+.study-app .notes-panel .study-tool-status { color: #7b7180; }
 .study-app .notes-panel .notebook-toolbar {
-  position: relative;
-  z-index: 1;
-  padding: 11px 18px 11px 30px;
-  border: 0;
-  background: #dce7d9;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+  padding: 9px 13px; border: 0; background: #e9e4dc;
 }
 .study-app .notes-panel .notebook-toolbar button,
 .study-app .notes-panel .notebook-toolbar select,
 .study-app .notes-panel .notebook-color {
-  border: 1px solid rgba(64, 94, 75, .12);
-  border-radius: 9px;
-  background: #f7f7ed;
-  color: #385346;
+  min-width: 30px; height: 30px; border: 0; border-radius: 7px;
+  background: #f7f4ee; color: #62596a; box-shadow: none;
 }
 .study-app .notes-panel .notebook-toolbar button:hover,
-.study-app .notes-panel .notebook-toolbar select:hover,
-.study-app .notes-panel .notebook-color:hover { background: #e8efe3; border-color: #789681; }
+.study-app .notes-panel .notebook-toolbar select:hover { background: #ded5e8; }
+.study-app .notes-panel .notebook-toolbar-spacer { flex: 1; }
 .study-app .notes-panel .notebook-paper {
-  min-height: 500px;
-  margin: 0 15px 0 22px;
-  padding: 30px 30px 38px 62px;
-  border-radius: 3px 3px 12px 3px;
-  background-color: #fffef7;
-  background-image: linear-gradient(to bottom, transparent 31px, #d9e4dc 32px);
-  background-size: 100% 32px;
-  box-shadow: 0 4px 18px rgba(38, 61, 53, .08);
+  min-height: 500px; margin: 0 12px 0; padding: 27px 28px 34px 55px;
+  border-radius: 3px 3px 9px 9px; background-color: #fffefa;
+  background-image: linear-gradient(to bottom,transparent 31px,#e8e4e9 32px);
+  background-size: 100% 32px; box-shadow: 0 3px 14px rgba(45,35,50,.055);
 }
-.study-app .notes-panel .notebook-margin { left: 43px; background: #e5b8b4; }
+.study-app .notes-panel .notebook-margin { left: 39px; background: #e7c9cb; }
 .study-app .notes-panel .notebook-editor {
-  min-height: 440px;
-  color: #31483d;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 16px;
-  line-height: 32px;
-  caret-color: #52745e;
+  min-height: 440px; color: #383440; font-family: Georgia,"Times New Roman",serif;
+  font-size: 16px; line-height: 32px; caret-color: #806b91;
 }
-.study-app .notes-panel .notebook-editor:empty::before { color: #9ba99c; }
-.study-app .notes-panel .notes-footer {
-  padding: 14px 22px 14px 32px;
-  border: 0;
-  color: #5f7666;
-  background: #e6eee2;
-}
-.study-app .video-panel {
-  background: color-mix(in srgb, var(--panel) 96%, #d8e5f2);
-}
-.study-app .video-panel .study-tool-header { background: color-mix(in srgb, #dce9f7 12%, var(--panel)); }
-.study-app .ai-panel { background: color-mix(in srgb, var(--panel) 96%, #8b79c8); }
-.study-app .study-space-tip { margin-top: 23px; padding: 16px 2px; background: transparent; border-top: 1px solid var(--experience-line); border-radius: 0; }
+.study-app .notes-panel .notebook-editor:empty::before { color: #aaa3ad; }
+.study-app .notes-panel .notes-footer { border: 0; padding: 12px 17px; background: #f1eee8; color: #817887; }
+.study-app .video-panel { background: color-mix(in srgb,var(--panel) 97%,#879bc4); }
+.study-app .video-panel .study-tool-header { background: color-mix(in srgb,#879bc4 10%,var(--panel)); }
+.study-app .ai-panel { background: color-mix(in srgb,var(--panel) 97%,#9380c6); }
+.study-app .ai-panel .chat-compose { box-shadow: none; }
+.study-app .study-space-tip { margin-top: 22px; padding: 15px 2px; border-top: 1px solid var(--experience-line); border-radius: 0; background: transparent; }
 
 :root[data-theme='contrast'] .study-app .notes-panel,
 :root[data-theme='contrast'] .study-app .notes-panel .notebook-paper { outline: 2px solid #fff; }
 @media (max-width: 1050px) {
-  .study-app .news-card { grid-template-columns: 135px minmax(0,1fr); }
-  .study-app .news-card > img, .study-app .news-image-placeholder { min-height: 200px; }
+  .study-app .study-sidebar { width: 235px; }
+  .study-app .study-workspace-grid.panels-3 { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .study-app .study-workspace-grid.panels-3 .ai-panel { grid-column: 1/-1; }
 }
 @media (max-width: 760px) {
+  .study-app .study-content { padding: 27px 17px 42px; }
+  .study-app .study-sidebar { background: var(--panel); }
+  .study-app .study-workspace-grid, .study-app .study-workspace-grid.panels-3 { grid-template-columns: minmax(0,1fr); }
+  .study-app .study-workspace-grid.panels-3 .ai-panel { grid-column: auto; }
   .study-app .news-card { grid-template-columns: 1fr; }
-  .study-app .news-card > img, .study-app .news-image-placeholder { height: 175px; min-height: 175px; }
-  .study-app .notes-panel .notebook-paper { margin-inline: 10px; padding-left: 48px; }
-  .study-app .notes-panel .notebook-margin { left: 32px; }
-  .study-app .notes-panel .study-tool-header { padding-left: 25px; }
+  .study-app .news-card > img, .study-app .news-image-placeholder { width: 100%; height: 170px; min-height: 170px; }
+  .study-app .notes-panel .notebook-paper { margin-inline: 8px; padding-left: 46px; }
+  .study-app .notes-panel .notebook-margin { left: 30px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .study-app .study-content > section { animation: none; }
