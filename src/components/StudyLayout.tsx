@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
-import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import { useMonisa } from '../context/MonisaContext'
 import Sidebar from './Sidebar/Sidebar'
@@ -11,7 +11,6 @@ export default function StudyLayout() {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuToggle = useRef<HTMLButtonElement>(null)
   const closeMenu = useCallback(() => { setMenuOpen(false); menuToggle.current?.focus() }, [])
-  const location = useLocation()
   if (loading) return <div className="page-loading" role="status">Preparando seu espaço…</div>
   if (!user) return <Navigate to="/login" replace />
 
