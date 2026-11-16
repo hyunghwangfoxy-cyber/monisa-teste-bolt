@@ -524,3 +524,15 @@
     justify-content: center;
   }
 }
+
+
+/* O controle de recolher/mostrar a sidebar precisa ficar visível no desktop. */
+@media (min-width: 761px) {
+  .study-app .study-header {
+    display: flex;
+    justify-content: flex-start;
+  }
+  .study-app.sidebar-collapsed .study-main {
+    margin-left: 0;
+  }
+}
