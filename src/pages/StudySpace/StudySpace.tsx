@@ -171,8 +171,8 @@ export default function StudySpace() {
         </div>
         <p className="video-note"><ExternalLink size={13} /> Os vídeos são fornecidos pelo YouTube. A busca abre os resultados em uma nova aba.</p>
       </section> : <section className="study-tool-panel ai-panel" key={tool}>
-        <div className="ai-panel-label"><Bot size={17} /> SUA TUTORA DE ESTUDOS</div>
-        <AIChat />
+        <div className="ai-panel-label"><Bot size={17} /> CHAT COM A MONISA</div>
+        <AIChat variant="workspace" />
       </section>)}
     </div>
     <p className="study-space-tip"><Sparkles size={16} /> Dica: você pode usar o caderno para registrar os pontos principais da aula e depois pedir à Monisa para transformar suas anotações em um resumo ou exercício.</p>
