@@ -548,3 +548,18 @@ textarea { resize: vertical; }
 @media (prefers-reduced-motion: reduce) {
   .study-sidebar nav a, .chat-suggestions button, .news-card, .learning-card, .primary-button, .secondary-button, .icon-button { transition: none; }
 }
+
+
+/* Controle para recolher e reabrir a navegação lateral em telas maiores. */
+.desktop-sidebar-toggle { display: inline-flex; flex: 0 0 auto; }
+.study-header { justify-content: flex-start; }
+.study-app.sidebar-collapsed .study-sidebar { transform: translateX(-100%); visibility: hidden; pointer-events: none; }
+.study-app.sidebar-collapsed .study-main { margin-left: 0; }
+@media (max-width: 760px) {
+  .desktop-sidebar-toggle { display: none; }
+  .study-header { justify-content: flex-start; }
+}
+@media (min-width: 761px) {
+  .study-sidebar { transition: transform .22s ease, visibility .22s ease; }
+  .study-main { transition: margin-left .22s ease; }
+}
