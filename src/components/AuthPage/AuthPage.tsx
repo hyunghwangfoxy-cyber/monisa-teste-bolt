@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, ArrowRight, BookOpen } from 'lucide-react'
 import { useMonisa } from '../../context/MonisaContext'
 import logo from '../../assets/images/MONISA.png'
@@ -10,13 +10,16 @@ import { supabase, supabaseConfigured } from '../../lib/supabase'
 export default function AuthPage({ register = false }: { register?: boolean }) {
   const { user, loading, error: sessionError, recoveryRequired, finishRecovery } = useMonisa()
   const navigate = useNavigate()
+  const location = useLocation()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [notice, setNotice] = useState('')
+  const [notice, setNotice] = useState(
+    typeof location.state?.notice === 'string' ? location.state.notice : ''
+  )
   const [destination, setDestination] = useState<string | null>(null)
 
   useEffect(() => {
@@ -48,15 +51,17 @@ export default function AuthPage({ register = false }: { register?: boolean }) {
           password,
           options: {
             data: { full_name: name.trim() },
-            emailRedirectTo: `${window.location.origin}/login`,
           },
         })
         if (signUpError) throw signUpError
-        if (data.session) navigate('/quiz')
-        else {
-          setNotice('Conta criada! Confira seu e-mail e confirme o cadastro. Depois, volte aqui para entrar.')
-          setPassword('')
+        // A conta deve ser criada sem confirmação por e-mail; deixe a pessoa entrar manualmente.
+        if (data.session) {
+          await supabase.auth.signOut()
         }
+        navigate('/login', {
+          replace: true,
+          state: { notice: 'Conta criada com sucesso! Agora entre com seu e-mail e senha.' },
+        })
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password })
         if (signInError) throw signInError
