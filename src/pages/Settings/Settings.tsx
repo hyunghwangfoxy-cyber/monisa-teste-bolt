@@ -8,12 +8,13 @@ import type { Preferences, Profile } from '../../lib/preferences'
 
 export default function Settings() {
   const { profile, setProfile } = useMonisa()
-  const [draft, setDraft] = useState<Preferences>(profile?.preferences || defaultPreferences)
-  const saved = useRef(profile?.preferences || defaultPreferences)
+  const initialPreferences = { ...defaultPreferences, ...(profile?.preferences || {}) }
+  const [draft, setDraft] = useState<Preferences>(initialPreferences)
+  const saved = useRef<Preferences>(initialPreferences)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
-  const changed = JSON.stringify(draft) !== JSON.stringify(profile?.preferences)
+  const changed = JSON.stringify(draft) !== JSON.stringify({ ...defaultPreferences, ...(profile?.preferences || {}) })
 
   useEffect(() => {
     applyPreferences(draft)
@@ -73,7 +74,7 @@ export default function Settings() {
         <label className="toggle-row"><span><strong>Resumos e esquemas visuais</strong><span>Quando fizer sentido, organiza a explicação em quadros, tabelas ou esquemas.</span></span><input type="checkbox" checked={draft.visualSummaries} onChange={event => change('visualSummaries', event.target.checked)} /></label>
         <label className="toggle-row"><span><strong>Matemática passo a passo</strong><span>Mostra o raciocínio e explica os símbolos usados.</span></span><input type="checkbox" checked={draft.mathSteps} onChange={event => change('mathSteps', event.target.checked)} /></label>
       </fieldset>
-      <div className="save-preferences"><div><strong>{changed ? 'Alterações ainda não salvas' : 'Tudo do seu jeito'}</strong><p>O visual é uma prévia. Salve para manter suas escolhas na conta.</p></div><div className="button-row">{changed && <button className="secondary-button" type="button" disabled={busy} onClick={() => { setDraft(profile.preferences); setError(''); setNotice('') }}>Descartar alterações</button>}<button className="primary-button" type="submit" disabled={busy || !changed}><Check size={18} />{busy ? 'Salvando…' : 'Salvar preferências'}</button></div></div>
+      <div className="save-preferences"><div><strong>{changed ? 'Alterações ainda não salvas' : 'Tudo do seu jeito'}</strong><p>O visual é uma prévia. Salve para manter suas escolhas na conta.</p></div><div className="button-row">{changed && <button className="secondary-button" type="button" disabled={busy} onClick={() => { setDraft({ ...defaultPreferences, ...(profile.preferences || {}) }); setError(''); setNotice('') }}>Descartar alterações</button>}<button className="primary-button" type="submit" disabled={busy || !changed}><Check size={18} />{busy ? 'Salvando…' : 'Salvar preferências'}</button></div></div>
       {error && <p className="form-error" role="alert">{error}</p>}
       {notice && <p className="form-success" role="status">{notice}</p>}
     </form>
