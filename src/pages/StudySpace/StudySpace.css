@@ -184,3 +184,20 @@
  .study-layout-options button { flex: 1 1 calc(50% - 7px); }
 }
 @media (prefers-reduced-motion: reduce) { .notebook-toolbar button, .notebook-toolbar select, .notebook-color { transition: none; } }
+
+
+/* Chat compacto do Espaço de Estudos: conversa direta, sem ferramentas do tutor principal. */
+.ai-panel:has(.chat-page-workspace) { display: flex; flex-direction: column; }
+.ai-panel .chat-page-workspace { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.ai-panel .workspace-chat-heading { padding: 5px 4px 14px; }
+.ai-panel .workspace-chat-heading .eyebrow { margin-bottom: 7px; }
+.ai-panel .workspace-chat-heading h2 { margin: 0; color: var(--text); font-size: 1.12rem; font-weight: 700; letter-spacing: -.025em; }
+.ai-panel .workspace-chat-heading p { margin: 6px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.55; }
+.ai-panel .chat-page-workspace .conversation { flex: 1; min-height: 220px; max-height: 440px; overflow-y: auto; }
+.ai-panel .chat-page-workspace .chat-empty { margin-top: 4px; }
+.ai-panel .chat-page-workspace .chat-compose { margin-top: auto; }
+.ai-panel .chat-page-workspace .chat-footer { margin-top: 9px; }
+.ai-panel .chat-page-workspace .chat-footer p { font-size: .62rem; }
+@media (max-width: 720px) {
+  .ai-panel .chat-page-workspace .conversation { max-height: 420px; }
+}
