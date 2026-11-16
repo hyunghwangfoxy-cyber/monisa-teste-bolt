@@ -38,7 +38,6 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
     <aside ref={navigation} id="study-navigation" className={`study-sidebar ${open ? 'is-open' : ''}`}>
       <NavLink to="/home" className="brand" onClick={onClose}><img src={logo} alt="" /> MONISA</NavLink>
       <button className="close-menu icon-button" aria-label="Fechar menu" onClick={onClose}><X /></button>
-      <p className="sidebar-caption">SEU ESPAÇO DE APRENDIZAGEM</p>
       <nav aria-label="Menu principal">
         <NavLink to="/home" onClick={onClose}><BookOpen size={20} />Estudar com a Monisa</NavLink>
         <NavLink to="/study-space" onClick={onClose}><PanelsTopLeft size={20} />Espaço de Estudos</NavLink>
@@ -48,10 +47,9 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
         <NavLink to="/faq" onClick={onClose}><CircleHelp size={20} />Dúvidas frequentes</NavLink>
         <NavLink to="/profile" onClick={onClose}><UserRound size={20} />Meu perfil</NavLink>
       </nav>
-      <div className="sidebar-note optional-detail"><span>Um passo de cada vez.</span><p>Você não precisa aprender como todo mundo. Só precisa encontrar seu jeito.</p></div>
       <div className="sidebar-account">
         {profile?.avatarUrl ? <img className="avatar small" src={profile.avatarUrl} alt="Sua foto" /> : <span className="avatar small avatar-placeholder">{profile?.name.slice(0, 1).toUpperCase() || 'M'}</span>}
-        <div><strong>{profile?.name || 'Seu espaço'}</strong><span>Seu ritmo importa</span></div>
+        <div><strong>{profile?.name || 'Minha conta'}</strong></div>
       </div>
       {error && <p className="form-error" role="alert">{error}</p>}
       <button className="signout-button" disabled={busy} onClick={exit}><LogOut size={18} />{busy ? 'Saindo…' : 'Sair da conta'}</button>
