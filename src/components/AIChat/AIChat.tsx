@@ -10,6 +10,23 @@ import BreakTimer from '../BreakTimer'
 type Conversation = { id: number; title: string; updatedAt?: string }
 type ChatResponse = { messages: ChatMessage[]; conversations: Conversation[]; conversationId: number }
 
+function cleanAssistantText(value: string) {
+  return value
+    .replace(/^\s{0,3}#{1,6}\s*/gm, '')
+    .replace(/^\s*[-*_]{3,}\s*$/gm, '')
+    .replace(/\*\*(.*?)\*\*/gs, '$1')
+    .replace(/__(.*?)__/gs, '$1')
+    .replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '$1')
+    .replace(/~~(.*?)~~/gs, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/^\s*[-*+]\s+/gm, '• ')
+    .replace(/^\s*>\s?/gm, '')
+    .replace(/^\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*$/gm, '')
+    .replace(/^\s*\|\s*(.*?)\s*\|\s*$/gm, (_, row: string) => row.split('|').map(cell => cell.trim()).filter(Boolean).join(' · '))
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
 type AIChatProps = { variant?: 'tutor' | 'workspace' }
 
 export default function AIChat({ variant = 'tutor' }: AIChatProps) {
@@ -129,7 +146,7 @@ export default function AIChat({ variant = 'tutor' }: AIChatProps) {
     <section className="conversation" aria-label="Sua conversa com a Monisa" aria-busy={busy || loading}>
       {loading && <div className="message-skeleton" role="status">Carregando sua conversa…</div>}
       {!loading && messages.length === 0 && <div className="chat-empty"><span className="assistant-label"><Sparkles size={17} />MONISA</span><p>Me conte o que você quer aprender. Você pode escrever uma pergunta ou escolher uma sugestão acima.</p></div>}
-      {messages.map(message => <article key={message.id} className={`chat-message ${message.role}`}><span className="assistant-label">{message.role === 'assistant' ? <><Sparkles size={15} />MONISA</> : 'VOCÊ'}</span><p>{message.content}</p></article>)}
+      {messages.map(message => <article key={message.id} className={`chat-message ${message.role}`}><span className="assistant-label">{message.role === 'assistant' ? <><Sparkles size={15} />MONISA</> : 'VOCÊ'}</span><p>{message.role === 'assistant' ? cleanAssistantText(message.content) : message.content}</p></article>)}
       {busy && !confirmDelete && <div className="thinking-message" role="status"><span className="status-dot" />A Monisa está preparando uma explicação para você…</div>}
       <div ref={end} />
     </section>
