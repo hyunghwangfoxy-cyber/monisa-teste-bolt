@@ -100,10 +100,9 @@ export default function Profile() {
         <button className="primary-button" disabled={busy} type="submit"><Check size={18} />{busy ? 'Salvando…' : 'Salvar meu perfil'}</button>
       </form>
     </div>
-    <section className="settings-card account-actions" aria-labelledby="account-actions-title">
-      <div className="card-title"><UserRound size={21} /><h2 id="account-actions-title">Sua conta</h2></div>
-      <div className="account-action-row"><div><strong>Sair da conta</strong><p className="field-hint">Encerra sua sessão neste dispositivo. Seu cadastro e seus estudos continuam salvos.</p></div><button className="secondary-button" type="button" disabled={busy} onClick={exit}><LogOut size={17} />Sair da conta</button></div>
-      <div className="account-action-row danger-action"><div><strong>Excluir conta e dados</strong><p className="field-hint">Apaga permanentemente seu cadastro, perfil, conversas e dados de estudo vinculados à conta. Essa ação não pode ser desfeita.</p></div><button className="danger-button" type="button" disabled={busy} onClick={() => { setShowDelete(value => !value); setConfirmation(''); setError('') }}><Trash2 size={17} />Excluir dados</button></div>
+    <section className="account-actions account-actions-compact" aria-label="Ações da conta">
+      <button className="secondary-button" type="button" disabled={busy} onClick={exit}><LogOut size={17} />Sair da conta</button>
+      <button className="danger-button" type="button" disabled={busy} onClick={() => { setShowDelete(value => !value); setConfirmation(''); setError('') }}><Trash2 size={17} />Excluir conta e dados</button>
       {showDelete && <div className="delete-confirmation" role="group" aria-label="Confirmação de exclusão da conta"><p><AlertTriangle size={18} /> Esta ação é permanente. Para confirmar, digite <strong>EXCLUIR</strong> abaixo.</p><label>Confirmação<input value={confirmation} onChange={event => setConfirmation(event.target.value.toUpperCase())} autoComplete="off" spellCheck={false} placeholder="Digite EXCLUIR" disabled={busy} /></label><div className="button-row"><button className="secondary-button" type="button" disabled={busy} onClick={() => { setShowDelete(false); setConfirmation('') }}>Cancelar</button><button className="danger-button" type="button" disabled={busy || confirmation !== 'EXCLUIR'} onClick={removeAccount}><Trash2 size={17} />{busy ? 'Excluindo…' : 'Confirmar exclusão'}</button></div></div>}
     </section>
     {error && <p className="form-error" role="alert">{error}</p>}
