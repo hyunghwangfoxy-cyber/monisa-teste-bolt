@@ -12,12 +12,9 @@ type ResponseLike = {
   setHeader(name: string, value: string): void
 }
 
-type GeminiResponse = {
-  candidates?: Array<{
-    content?: {
-      parts?: Array<{ text?: string }>
-    }
-  }>
+type GroqResponse = {
+  choices?: Array<{ message?: { content?: string | Array<{ type?: string; text?: string }> } }>
+  error?: { message?: string }
 }
 
 function fail(res: ResponseLike, status: number, error: string) {
@@ -59,7 +56,7 @@ export default async function handler(req: RequestLike, res: ResponseLike) {
   const learningContext = profile?.learning_profile
     ? `Perfil de aprendizagem informado pelo estudante: ${JSON.stringify(profile.learning_profile).slice(0, 1600)}. Use isso apenas para adaptar a forma de explicar; não faça diagnósticos.`
     : ''
-  const instructions = `Você é Monisa, uma assistente de IA completa e também tutora educacional. Converse naturalmente sobre assuntos variados, respeitando limites de segurança. Quando a pessoa estiver estudando, ensine com clareza, exemplos, analogias e exercícios graduais. Responda em português do Brasil, sem infantilizar. Nome da estudante: ${profile?.name || 'Estudante'}. Matéria de interesse: ${profile?.subject || 'não informada'}. ${learningContext} ${style} ${preferences.simpleLanguage ? 'Prefira linguagem simples e explique termos técnicos.' : ''} ${preferences.focusMode ? 'Mantenha foco em uma ideia por vez e evite excesso de informações.' : ''} Se não souber algo, deixe isso claro e não invente fontes. Não faça diagnósticos médicos ou psicológicos.`
+  const instructions = `Você é Monisa, uma assistente de IA e tutora educacional. Converse naturalmente sobre assuntos variados, respeitando limites de segurança. Quando a pessoa estiver estudando, ensine com clareza, exemplos simples e etapas graduais. Responda em português do Brasil, sem infantilizar. Não comece cumprimentando nem repita o nome da estudante em todas as respostas. Não mencione configurações, tema visual, ambiente escuro ou recursos da plataforma, a menos que a pessoa pergunte. FORMATAÇÃO OBRIGATÓRIA: escreva em texto simples e natural, como uma conversa. Não use Markdown: nada de #, ##, **, __, crases, tabelas, linhas separadoras ou títulos decorados com emojis. Não use hashtags. Prefira parágrafos curtos; quando a sequência realmente ajudar, use uma lista numerada simples. Evite introduções genéricas, frases de encerramento repetitivas e excesso de tópicos. Responda primeiro ao que foi perguntado. Para dúvidas simples, seja breve; aprofunde quando a pergunta pedir ou o assunto exigir. Nome da estudante: ${profile?.name || 'Estudante'}. Matéria de interesse: ${profile?.subject || 'não informada'}. ${learningContext} ${style} ${preferences.simpleLanguage ? 'Prefira linguagem simples e explique termos técnicos.' : ''} ${preferences.focusMode ? 'Mantenha foco em uma ideia por vez e evite excesso de informações.' : ''} ${preferences.literalLanguage ? 'Use linguagem literal e direta; evite metáforas, ironias e expressões ambíguas.' : ''} ${preferences.everydayExamples ? 'Inclua exemplos de situações do cotidiano quando ajudarem a compreensão.' : ''} ${preferences.visualSummaries ? 'Use um pequeno esquema em texto simples quando isso realmente facilitar.' : ''} ${preferences.mathSteps ? 'Em matemática, apresente as operações em etapas e explique os símbolos.' : ''} ${preferences.oneInstructionAtTime ? 'Dê apenas uma instrução ou pequena etapa por vez.' : ''} Se não souber algo, deixe isso claro e não invente fontes. Não faça diagnósticos médicos ou psicológicos.`
 
   const conversationId = Number(req.query?.conversationId)
   if (req.method === 'GET') {
@@ -99,8 +96,8 @@ export default async function handler(req: RequestLike, res: ResponseLike) {
   }
 
   if (typeof body.message !== 'string' || !body.message.trim() || body.message.length > 2000) return fail(res, 400, 'Escreva uma pergunta com até 2.000 caracteres.')
-  const geminiApiKey = process.env.GEMINI_API_KEY
-  if (!geminiApiKey) return fail(res, 503, 'A IA ainda não foi ativada. Adicione GEMINI_API_KEY nas variáveis de ambiente da Vercel.')
+  const groqApiKey = process.env.GROQ_API_KEY
+  if (!groqApiKey) return fail(res, 503, 'A IA ainda não foi ativada. Adicione GROQ_API_KEY nas variáveis de ambiente do servidor.')
 
   let targetId = Number(body.conversationId)
   let title = body.message.trim().slice(0, 54)
@@ -117,69 +114,58 @@ export default async function handler(req: RequestLike, res: ResponseLike) {
   const { data: history, error: historyError } = await supabase.from('study_messages').select('role,content').eq('user_id', userId).eq('conversation_id', targetId).order('id', { ascending: false }).limit(20)
   if (historyError) return fail(res, 503, 'Não foi possível recuperar o contexto da conversa.')
 
-  const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash'
-  const contents = [
+  const model = process.env.GROQ_MODEL || 'openai/gpt-oss-120b'
+  const messages = [
+    { role: 'system', content: instructions },
     ...(history || []).reverse().map(message => ({
-      role: message.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: message.content }],
+      role: message.role === 'assistant' ? 'assistant' : 'user',
+      content: message.content,
     })),
-    { role: 'user', parts: [{ text: body.message.trim() }] },
+    { role: 'user', content: body.message.trim() },
   ]
 
   let answer = ''
   try {
-    const requestBody = {
-      systemInstruction: { parts: [{ text: instructions }] },
-      contents,
-      generationConfig: {
-        maxOutputTokens: 1400,
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${groqApiKey}`,
       },
-    }
-    const primaryModel = process.env.GEMINI_MODEL || 'gemini-3.8-flash'
-    const modelsToTry = [primaryModel, ...(primaryModel === 'gemini-3.5-flash-lite' ? [] : ['gemini-3.5-flash-lite'])]
+      body: JSON.stringify({
+        model,
+        messages,
+        max_tokens: 1400,
+        temperature: 0.6,
+      }),
+      signal: AbortSignal.timeout(45000),
+    })
 
-    let lastStatus = 0
-    let lastDetail = ''
-    for (const model of modelsToTry) {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': geminiApiKey,
-        },
-        body: JSON.stringify(requestBody),
-        signal: AbortSignal.timeout(45000),
-      })
-
-      const result = await response.json().catch(() => null) as (GeminiResponse & { error?: { message?: string } }) | null
-      if (response.ok) {
-        answer = result?.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim() || ''
-        if (answer) break
-        return fail(res, 503, 'O Gemini não recebeu uma resposta válida. Tente novamente.')
+    const result = await response.json().catch(() => null) as GroqResponse | null
+    if (!response.ok) {
+      const detail = result?.error?.message || ''
+      console.error('Groq API error:', response.status, detail || 'Sem detalhes')
+      if (response.status === 429) {
+        return fail(res, 503, 'A Monisa atingiu temporariamente o limite gratuito da IA. Aguarde um pouco e tente novamente.')
       }
-
-      lastStatus = response.status
-      lastDetail = result?.error?.message || ''
-      console.error('Gemini API error:', model, response.status, lastDetail || 'Sem detalhes')
-
-      if (response.status === 429) return fail(res, 503, 'O Gemini atingiu o limite temporário de solicitações. Aguarde um pouco e tente novamente.')
-      if (response.status === 401 || response.status === 403) return fail(res, 503, 'A chave do Gemini não foi aceita. Confira GEMINI_API_KEY nas variáveis de ambiente da Vercel.')
-      if (response.status !== 503) {
-        return fail(res, 503, `Erro do Gemini (${response.status}): ${(lastDetail || 'Falha na solicitação.').slice(0, 180)}`)
+      if (response.status === 401 || response.status === 403) {
+        return fail(res, 503, 'A chave da Groq não foi aceita. Confira GROQ_API_KEY nas variáveis de ambiente do servidor.')
       }
-      // Se o modelo principal estiver indisponível por alta demanda, tenta o Flash-Lite estável.
+      return fail(res, 503, `Erro da IA (${response.status}): ${(detail || 'Falha na solicitação.').slice(0, 180)}`)
     }
 
-    return fail(res, 503, lastDetail
-      ? `Os modelos Gemini estão temporariamente indisponíveis (HTTP ${lastStatus}): ${lastDetail.slice(0, 160)}`
-      : 'Os modelos Gemini estão temporariamente indisponíveis. Tente novamente em instantes.')
+    const content = result?.choices?.[0]?.message?.content
+    answer = typeof content === 'string'
+      ? content.trim()
+      : Array.isArray(content)
+        ? content.map(part => part.text || '').join('').trim()
+        : ''
+    if (!answer) return fail(res, 503, 'A Monisa não recebeu uma resposta válida. Tente novamente.')
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error)
-    console.error('Gemini connection error:', detail)
-    return fail(res, 503, `Falha de conexão com o Gemini: ${detail.slice(0, 180)}`)
+    console.error('Groq connection error:', detail)
+    return fail(res, 503, `Falha de conexão com a IA: ${detail.slice(0, 180)}`)
   }
-  if (!answer) return fail(res, 503, 'A Monisa não recebeu uma resposta válida. Tente novamente.')
-
   const { data: saved, error: saveError } = await supabase.from('study_messages').insert([
     { user_id: userId, conversation_id: targetId, role: 'user', content: body.message.trim() },
     { user_id: userId, conversation_id: targetId, role: 'assistant', content: answer },

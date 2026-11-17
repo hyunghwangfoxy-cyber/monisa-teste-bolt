@@ -13,6 +13,7 @@ export interface MonisaState {
   refreshProfile: () => Promise<void>
   setProfile: (profile: Profile) => void
   signOut: () => Promise<void>
+  deleteAccount: () => Promise<void>
 }
 
 export const MonisaContext = createContext<MonisaState | null>(null)

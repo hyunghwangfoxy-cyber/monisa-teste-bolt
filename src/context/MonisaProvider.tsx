@@ -42,6 +42,23 @@ export default function MonisaProvider({ children }: { children: ReactNode }) {
     setRecoveryRequired(false)
   }, [])
 
+  const deleteAccount = useCallback(async () => {
+    const { error: deleteError } = await supabase.rpc('delete_my_monisa_account')
+    if (deleteError) {
+      if (deleteError.message.includes('delete_my_monisa_account')) {
+        throw new Error('A função de exclusão ainda não foi ativada no banco de dados.')
+      }
+      throw new Error('Não foi possível excluir a conta. Tente novamente.')
+    }
+    if (user?.id) localStorage.removeItem(`monisa-study-notes-${user.id}`)
+    localStorage.removeItem('monisa-demo-messages')
+    const { error: localSignOutError } = await supabase.auth.signOut({ scope: 'local' })
+    if (localSignOutError) throw new Error('A conta foi excluída, mas não foi possível limpar a sessão neste navegador. Feche e abra a Monisa novamente.')
+    setProfileState(null)
+    setUser(null)
+    setRecoveryRequired(false)
+  }, [user?.id])
+
   useEffect(() => {
     let active = true
     if (!supabaseConfigured) {
@@ -94,6 +111,6 @@ export default function MonisaProvider({ children }: { children: ReactNode }) {
   return <MonisaContext.Provider value={{
     user, loading, profile, profileLoading, error, recoveryRequired,
     finishRecovery: () => setRecoveryRequired(false),
-    refreshProfile, setProfile, signOut,
+    refreshProfile, setProfile, signOut, deleteAccount,
   }}>{children}</MonisaContext.Provider>
 }

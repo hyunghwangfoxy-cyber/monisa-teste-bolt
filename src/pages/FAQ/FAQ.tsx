@@ -1,30 +1,23 @@
 import { useState } from 'react'
 import './FAQ.css'
-import { BookOpen, Brain, Palette, Sparkles, UserRound, ChevronDown, Search, Lightbulb } from 'lucide-react'
+import { Brain, Palette, Sparkles, UserRound, ChevronDown, Search, Lightbulb } from 'lucide-react'
 
 const topics = [
   { category: 'Conhecendo a Monisa', icon: Sparkles, color: 'violet', questions: [
-    { q: 'O que é a Monisa?', a: 'A Monisa é uma plataforma de aprendizagem que reúne uma assistente de estudos, recursos de personalização e atividades. A proposta é ajudar cada pessoa a estudar de um jeito mais confortável.' },
-    { q: 'Como a Monisa pode me ajudar?', a: 'Você pode fazer perguntas sobre matérias, pedir explicações, solicitar exemplos e organizar os estudos. Também pode explorar atividades e ajustar a experiência às suas preferências.' },
-    { q: 'Preciso saber exatamente o que perguntar?', a: 'Não! Você pode começar com uma dúvida simples, escrever o nome de um assunto ou pedir: “me explique desde o começo”. A Monisa pode ajudar a organizar o próximo passo.' }
+    { q: 'O que é a Monisa?', a: 'É uma plataforma de aprendizagem com tutora de IA, atividades e opções para personalizar seus estudos.' },
+    { q: 'Como posso começar?', a: 'Escreva uma dúvida, escolha uma matéria ou peça uma explicação desde o começo.' }
   ]},
-  { category: 'Aprendizagem e quiz', icon: Brain, color: 'blue', questions: [
-    { q: 'Para que serve o quiz inicial?', a: 'O quiz identifica preferências de aprendizagem, como formato das explicações, ritmo e conforto visual. Ele não é uma prova e não existe resposta certa ou errada.' },
-    { q: 'Posso mudar minhas respostas depois?', a: 'Sim. Suas preferências podem ser ajustadas nas opções de acessibilidade e personalização. A ideia é que a plataforma acompanhe o que funciona melhor para você.' },
-    { q: 'A Monisa substitui meu professor?', a: 'Não. Ela é uma ferramenta de apoio aos estudos. Confira conteúdos importantes com seus materiais didáticos e professores, especialmente antes de avaliações.' }
+  { category: 'Aprendizagem', icon: Brain, color: 'blue', questions: [
+    { q: 'O quiz é uma prova?', a: 'Não. Ele ajuda a conhecer suas preferências de estudo. Não existe resposta certa ou errada.' },
+    { q: 'A Monisa substitui o professor?', a: 'Não. Ela é um apoio para estudar. Confira conteúdos importantes com seus professores e materiais.' }
   ]},
-  { category: 'Acessibilidade e conforto', icon: Palette, color: 'pink', questions: [
-    { q: 'Como aumentar o tamanho das letras?', a: 'Acesse Acessibilidade no menu e escolha o tamanho de texto que deixe a leitura mais confortável.' },
-    { q: 'Posso trocar o tema da plataforma?', a: 'Sim. Nas configurações, você pode escolher entre tema escuro, claro e alto contraste, conforme as opções disponíveis.' },
-    { q: 'A plataforma exige informar algum diagnóstico?', a: 'Não. As preferências são escolhas pessoais de conforto e aprendizagem. Você não precisa informar diagnóstico para usar os recursos.' }
+  { category: 'Acessibilidade', icon: Palette, color: 'pink', questions: [
+    { q: 'Posso mudar o visual?', a: 'Sim. Em configurações, escolha tema escuro, claro ou alto contraste e ajuste o tamanho do texto.' },
+    { q: 'Preciso informar um diagnóstico?', a: 'Não. Os recursos podem ser usados por qualquer pessoa, conforme sua preferência.' }
   ]},
-  { category: 'Conta e perfil', icon: UserRound, color: 'teal', questions: [
-    { q: 'Onde altero meu nome e meu perfil?', a: 'Abra Meu perfil no menu para consultar e editar as informações disponíveis na sua conta.' },
-    { q: 'Minhas preferências ficam salvas?', a: 'Quando a conta e o armazenamento estiverem configurados, as preferências poderão ficar associadas ao seu perfil para serem recuperadas ao entrar novamente.' }
-  ]},
-  { category: 'Estudos e atividades', icon: BookOpen, color: 'gold', questions: [
-    { q: 'O que é o Monisa Play?', a: 'É uma área com atividades interativas e jogos leves, pensados para oferecer pequenas pausas e experiências diferentes durante o uso da plataforma.' },
-    { q: 'E se a resposta da IA estiver errada?', a: 'Peça outra explicação, solicite fontes ou confira a informação com seu material de aula. Sistemas de IA podem cometer erros e não devem ser tratados como fonte infalível.' }
+  { category: 'Conta e estudos', icon: UserRound, color: 'teal', questions: [
+    { q: 'Onde edito meu perfil?', a: 'Abra “Meu perfil” no menu para alterar suas informações.' },
+    { q: 'E se a IA errar?', a: 'Peça outra explicação e confira a informação com seu material de estudo.' }
   ]}
 ]
 

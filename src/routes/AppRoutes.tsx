@@ -10,6 +10,7 @@ import LearningHub from '../pages/Profile/LearningHub'
 import Play from '../pages/Play/Play'
 import FAQ from '../pages/FAQ/FAQ'
 import Discover from '../pages/Discover/Discover'
+import StudySpace from '../pages/StudySpace/StudySpace'
 import StudyLayout from '../components/StudyLayout'
 import { useMonisa } from '../context/MonisaContext'
 
@@ -24,6 +25,7 @@ export default function AppRoutes() {
     <Route path="/register" element={user ? <Navigate to={destination} replace /> : <Register />} />
     <Route element={<StudyLayout />}>
       <Route path="/home" element={<Home />} />
+      <Route path="/study-space" element={<StudySpace />} />
       <Route path="/chat" element={<Home />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/settings" element={<Settings />} />

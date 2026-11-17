@@ -8,12 +8,13 @@ import type { Preferences, Profile } from '../../lib/preferences'
 
 export default function Settings() {
   const { profile, setProfile } = useMonisa()
-  const [draft, setDraft] = useState<Preferences>(profile?.preferences || defaultPreferences)
-  const saved = useRef(profile?.preferences || defaultPreferences)
+  const initialPreferences = { ...defaultPreferences, ...(profile?.preferences || {}) }
+  const [draft, setDraft] = useState<Preferences>(initialPreferences)
+  const saved = useRef<Preferences>(initialPreferences)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
-  const changed = JSON.stringify(draft) !== JSON.stringify(profile?.preferences)
+  const changed = JSON.stringify(draft) !== JSON.stringify({ ...defaultPreferences, ...(profile?.preferences || {}) })
 
   useEffect(() => {
     applyPreferences(draft)
@@ -58,7 +59,22 @@ export default function Settings() {
         <label className="toggle-row"><span><strong>Modo foco</strong><span>Oculta detalhes decorativos e orienta a IA a tratar uma tarefa por vez.</span></span><input type="checkbox" checked={draft.focusMode} onChange={event => change('focusMode', event.target.checked)} /></label>
         <label><span id="break-label">Lembrar de fazer uma pausa</span><select aria-labelledby="break-label" aria-describedby="break-description" value={draft.breakMinutes} onChange={event => change('breakMinutes', Number(event.target.value))}><option value={0}>Sem lembretes</option><option value={15}>A cada 15 minutos</option><option value={25}>A cada 25 minutos</option><option value={45}>A cada 45 minutos</option></select><span id="break-description" className="field-hint">Lembrete silencioso durante o chat. Você pode pausar o relógio e decidir quando continuar.</span></label>
       </fieldset>
-      <div className="save-preferences"><div><strong>{changed ? 'Alterações ainda não salvas' : 'Tudo do seu jeito'}</strong><p>O visual é uma prévia. Salve para manter suas escolhas na conta.</p></div><div className="button-row">{changed && <button className="secondary-button" type="button" disabled={busy} onClick={() => { setDraft(profile.preferences); setError(''); setNotice('') }}>Descartar alterações</button>}<button className="primary-button" type="submit" disabled={busy || !changed}><Check size={18} />{busy ? 'Salvando…' : 'Salvar preferências'}</button></div></div>
+      <fieldset className="settings-card" disabled={busy}><legend><Eye size={20} />Leitura e dislexia</legend>
+        <label className="toggle-row"><span><strong>Fonte alternativa para leitura</strong><span>Usa uma fonte mais simples como opção de leitura.</span></span><input type="checkbox" checked={draft.dyslexiaFont} onChange={event => change('dyslexiaFont', event.target.checked)} /></label>
+        <div className="settings-fields"><label><span id="letter-spacing-label">Espaçamento entre letras</span><select aria-labelledby="letter-spacing-label" value={draft.letterSpacing} onChange={event => change('letterSpacing', event.target.value as Preferences['letterSpacing'])}><option value="normal">Padrão</option><option value="wide">Amplo</option><option value="wider">Bem amplo</option></select></label><label><span id="line-spacing-label">Espaçamento entre linhas</span><select aria-labelledby="line-spacing-label" value={draft.lineSpacing} onChange={event => change('lineSpacing', event.target.value as Preferences['lineSpacing'])}><option value="normal">Padrão</option><option value="relaxed">Confortável</option><option value="wide">Bem espaçado</option></select></label></div>
+        <label className="toggle-row"><span><strong>Régua de leitura</strong><span>Uma faixa discreta ajuda a acompanhar a linha do texto.</span></span><input type="checkbox" checked={draft.readingRuler} onChange={event => change('readingRuler', event.target.checked)} /></label>
+      </fieldset>
+      <fieldset className="settings-card" disabled={busy}><legend><Sparkles size={20} />Estímulos e concentração</legend>
+        <label className="toggle-row"><span><strong>Interface com menos estímulos</strong><span>Reduz efeitos visuais e sombras.</span></span><input type="checkbox" checked={draft.lowStimulus} onChange={event => change('lowStimulus', event.target.checked)} /></label>
+        <label className="toggle-row"><span><strong>Uma instrução por vez</strong><span>A Monisa evita enviar muitas orientações na mesma resposta.</span></span><input type="checkbox" checked={draft.oneInstructionAtTime} onChange={event => change('oneInstructionAtTime', event.target.checked)} /></label>
+      </fieldset>
+      <fieldset className="settings-card" disabled={busy}><legend><Sparkles size={20} />Compreensão e comunicação</legend>
+        <label className="toggle-row"><span><strong>Linguagem literal</strong><span>Evita expressões figuradas, ironias e ambiguidades quando possível.</span></span><input type="checkbox" checked={draft.literalLanguage} onChange={event => change('literalLanguage', event.target.checked)} /></label>
+        <label className="toggle-row"><span><strong>Exemplos do cotidiano</strong><span>Relaciona conceitos com situações práticas.</span></span><input type="checkbox" checked={draft.everydayExamples} onChange={event => change('everydayExamples', event.target.checked)} /></label>
+        <label className="toggle-row"><span><strong>Resumos e esquemas visuais</strong><span>Quando fizer sentido, organiza a explicação em quadros, tabelas ou esquemas.</span></span><input type="checkbox" checked={draft.visualSummaries} onChange={event => change('visualSummaries', event.target.checked)} /></label>
+        <label className="toggle-row"><span><strong>Matemática passo a passo</strong><span>Mostra o raciocínio e explica os símbolos usados.</span></span><input type="checkbox" checked={draft.mathSteps} onChange={event => change('mathSteps', event.target.checked)} /></label>
+      </fieldset>
+      <div className="save-preferences"><div><strong>{changed ? 'Alterações ainda não salvas' : 'Tudo do seu jeito'}</strong><p>O visual é uma prévia. Salve para manter suas escolhas na conta.</p></div><div className="button-row">{changed && <button className="secondary-button" type="button" disabled={busy} onClick={() => { setDraft({ ...defaultPreferences, ...(profile.preferences || {}) }); setError(''); setNotice('') }}>Descartar alterações</button>}<button className="primary-button" type="submit" disabled={busy || !changed}><Check size={18} />{busy ? 'Salvando…' : 'Salvar preferências'}</button></div></div>
       {error && <p className="form-error" role="alert">{error}</p>}
       {notice && <p className="form-success" role="status">{notice}</p>}
     </form>

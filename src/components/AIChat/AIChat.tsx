@@ -10,7 +10,27 @@ import BreakTimer from '../BreakTimer'
 type Conversation = { id: number; title: string; updatedAt?: string }
 type ChatResponse = { messages: ChatMessage[]; conversations: Conversation[]; conversationId: number }
 
-export default function AIChat() {
+function cleanAssistantText(value: string) {
+  return value
+    .replace(/^\s{0,3}#{1,6}\s*/gm, '')
+    .replace(/^\s*[-*_]{3,}\s*$/gm, '')
+    .replace(/\*\*(.*?)\*\*/gs, '$1')
+    .replace(/__(.*?)__/gs, '$1')
+    .replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '$1')
+    .replace(/~~(.*?)~~/gs, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/^\s*[-*+]\s+/gm, '• ')
+    .replace(/^\s*>\s?/gm, '')
+    .replace(/^\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*$/gm, '')
+    .replace(/^\s*\|\s*(.*?)\s*\|\s*$/gm, (_, row: string) => row.split('|').map(cell => cell.trim()).filter(Boolean).join(' · '))
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
+type AIChatProps = { variant?: 'tutor' | 'workspace' }
+
+export default function AIChat({ variant = 'tutor' }: AIChatProps) {
+  const workspaceMode = variant === 'workspace'
   const { profile } = useMonisa()
   const location = useLocation()
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -107,16 +127,18 @@ export default function AIChat() {
   const loadAgain = useCallback(() => { setLoading(true); setRetry(value => value + 1) }, [])
   if (!profile) return null
 
-  return <section className="chat-page" aria-labelledby="chat-title">
-    <div className="chat-heading"><div><span className="eyebrow">UM ESPAÇO PARA DESCOBRIR</span><h1 id="chat-title">Olá, {profile.name.split(' ')[0]}.<br /><span>O que vamos aprender hoje?</span></h1><p className="optional-detail">Eu sou a Monisa. A gente pode ir devagar, repetir e encontrar outro jeito de explicar.</p></div><span className="tutor-symbol optional-detail" aria-hidden="true"><Sparkles size={34} /></span></div>
-    <div className="chat-tools"><Link className="preference-chip" to="/settings"><span className="status-dot" />Explicações {profile.preferences.responseStyle === 'steps' ? 'passo a passo' : profile.preferences.responseStyle === 'short' ? 'curtas' : 'detalhadas'}</Link><BreakTimer key={profile.preferences.breakMinutes} minutes={profile.preferences.breakMinutes} /></div>
-    <section className="chat-history" aria-label="Conversas salvas">
+  return <section className={`chat-page${workspaceMode ? ' chat-page-workspace' : ''}`} aria-labelledby="chat-title">
+    {workspaceMode ? <div className="workspace-chat-heading"><span className="eyebrow">CHAT DA SUA AULA</span><h2 id="chat-title">Converse com a Monisa</h2><p>Tire dúvidas e peça explicações sobre o conteúdo que está estudando.</p></div> : <>
+      <div className="chat-heading"><div><span className="eyebrow">UM ESPAÇO PARA DESCOBRIR</span><h1 id="chat-title">Olá, {profile.name.split(' ')[0]}.<br /><span>O que vamos aprender hoje?</span></h1><p className="optional-detail">Eu sou a Monisa. A gente pode ir devagar, repetir e encontrar outro jeito de explicar.</p></div><span className="tutor-symbol optional-detail" aria-hidden="true"><Sparkles size={34} /></span></div>
+      <div className="chat-tools"><Link className="preference-chip" to="/settings"><span className="status-dot" />Explicações {profile.preferences.responseStyle === 'steps' ? 'passo a passo' : profile.preferences.responseStyle === 'short' ? 'curtas' : 'detalhadas'}</Link><BreakTimer key={profile.preferences.breakMinutes} minutes={profile.preferences.breakMinutes} /></div>
+      <section className="chat-history" aria-label="Conversas salvas">
       <div className="chat-history-heading"><div><strong>Suas conversas</strong><span>Seus assuntos ficam separados.</span></div><button className="primary-button" type="button" onClick={newConversation} disabled={busy}><Plus size={17} /> Nova conversa</button></div>
       <div className="chat-history-list">
         {conversations.map(item => <button type="button" key={item.id} className={'chat-history-item' + (item.id === conversationId ? ' active' : '')} onClick={() => openConversation(item.id)} aria-current={item.id === conversationId ? 'page' : undefined}><MessageCircle size={16} /><span>{item.title || 'Nova conversa'}</span></button>)}
       </div>
     </section>
-    {messages.length === 0 && !loading && <div className="chat-suggestions optional-detail">
+    </>}
+    {!workspaceMode && messages.length === 0 && !loading && <div className="chat-suggestions optional-detail">
       <button onClick={() => suggest(`Quero estudar ${profile.subject || 'um novo assunto'}. Você pode me ajudar a começar com uma explicação simples?`)}><BookOpen size={22} /><strong>Começar um estudo</strong><span>Um assunto, pequenos passos.</span></button>
       <button onClick={() => suggest('Quero criar um resumo para estudar. Pergunte qual assunto ou texto eu quero resumir.')}><FileText size={22} /><strong>Criar um resumo</strong><span>Organizar o que mais importa.</span></button>
       <button onClick={() => suggest('Quero praticar com perguntas curtas sobre um assunto que estou estudando. Pergunte qual assunto.')}><Sparkles size={22} /><strong>Praticar um assunto</strong><span>Treinar sem pressa.</span></button>
@@ -124,7 +146,7 @@ export default function AIChat() {
     <section className="conversation" aria-label="Sua conversa com a Monisa" aria-busy={busy || loading}>
       {loading && <div className="message-skeleton" role="status">Carregando sua conversa…</div>}
       {!loading && messages.length === 0 && <div className="chat-empty"><span className="assistant-label"><Sparkles size={17} />MONISA</span><p>Me conte o que você quer aprender. Você pode escrever uma pergunta ou escolher uma sugestão acima.</p></div>}
-      {messages.map(message => <article key={message.id} className={`chat-message ${message.role}`}><span className="assistant-label">{message.role === 'assistant' ? <><Sparkles size={15} />MONISA</> : 'VOCÊ'}</span><p>{message.content}</p></article>)}
+      {messages.map(message => <article key={message.id} className={`chat-message ${message.role}`}><span className="assistant-label">{message.role === 'assistant' ? <><Sparkles size={15} />MONISA</> : 'VOCÊ'}</span><p>{message.role === 'assistant' ? cleanAssistantText(message.content) : message.content}</p></article>)}
       {busy && !confirmDelete && <div className="thinking-message" role="status"><span className="status-dot" />A Monisa está preparando uma explicação para você…</div>}
       <div ref={end} />
     </section>
@@ -134,7 +156,7 @@ export default function AIChat() {
       <textarea id="study-question" ref={input} value={draft} readOnly={busy} onChange={event => setDraft(event.target.value)} maxLength={2000} rows={3} placeholder="Escreva sua pergunta. Pode ser do seu jeito…" required />
       <div className="compose-bottom"><span>{draft.length}/2000</span><button className="primary-button" type="submit" disabled={busy || loading || !draft.trim()}>{busy ? 'Aguarde…' : 'Enviar pergunta'}<Send size={17} aria-hidden="true" /></button></div>
     </form>
-    <div className="chat-footer"><p>A IA pode errar. Confira informações importantes. Suas mensagens são salvas na sua conta e enviadas ao serviço de IA para gerar respostas.</p>{messages.length > 0 && <button className="text-button" disabled={busy} onClick={() => setConfirmDelete(true)}><Trash2 size={14} />Apagar esta conversa</button>}</div>
+    <div className="chat-footer"><p>{workspaceMode ? "A IA pode cometer erros. Confira informações importantes." : "A IA pode errar. Confira informações importantes. Suas mensagens são salvas na sua conta e enviadas ao serviço de IA para gerar respostas."}</p>{messages.length > 0 && <button className="text-button" disabled={busy} onClick={() => setConfirmDelete(true)}><Trash2 size={14} />Apagar esta conversa</button>}</div>
     {confirmDelete && <div className="confirm-panel"><p>Apagar esta conversa e suas mensagens? As outras conversas continuarão salvas.</p><div className="button-row"><button className="danger-button" disabled={busy} onClick={deleteConversation}>Sim, apagar conversa</button><button className="secondary-button" disabled={busy} onClick={() => setConfirmDelete(false)}>Cancelar</button></div></div>}
   </section>
 }
