@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './FAQ.css'
-import { BookOpen, Brain, Palette, Sparkles, UserRound, ChevronDown, Search, Lightbulb } from 'lucide-react'
+import { Brain, Palette, Sparkles, UserRound, ChevronDown, Search, Lightbulb } from 'lucide-react'
 
 const topics = [
   { category: 'Conhecendo a Monisa', icon: Sparkles, color: 'violet', questions: [
